@@ -11,7 +11,7 @@ def Level:
         self.width = width
         self.height = height
 
-        self.tilemap = {} # Dictionary {texid : pygame.Surface() with texture}
+        self.tilemap = {} # Dictionary {typeid : pygame.Surface()}
         self.tiletypes = {} # Dictionary {typeid : Tile() with that typeid}
 
         self.tiles = [] # Array of typeids
