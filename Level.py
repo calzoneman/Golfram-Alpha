@@ -1,3 +1,5 @@
+import pygame
+from pygame.locals import *
 from Tile import *
 
 def Level:
@@ -11,8 +13,11 @@ def Level:
 
         self.tilemap = {} # Dictionary {texid : pygame.Surface() with texture}
         self.tiletypes = {} # Dictionary {typeid : Tile() with that typeid}
+
         self.tiles = [] # Array of typeids
         self.tiles.append(DEFAULT_TYPEID)
+
+        self.tilesize = 1 # The edge length of a tile, in pixels
 
     def add_row(self):
         self.tiles.append([DEFAULT_TYPEID for a in range(self.width)])
@@ -48,6 +53,18 @@ def Level:
             self.add_rows(xy[1] - self.height + 1)
         self.set_at(xy, t)
 
+    def draw(self, x_offset, y_offset, width, height):
+        surf = pygame.Surface(width * self.tilesize, height * self.tilesize, SRCALPHA)
+        x = x_offset
+        y = y_offset
+        while y < y_offset + height and y < self.height:
+            while x < x_offset + width and x < self.width:
+                surf.blit(self.tilemap[self.tiles[y * self.width + x]], (x * self.tilesize, y * self.tilesize))
+                x += 1
+            y += 1
+        
+        return surf
+        
     def load_from_file(self, filename):
         return # To be implemented
 
