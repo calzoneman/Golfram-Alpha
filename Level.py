@@ -81,11 +81,8 @@ class Level:
             line = line.strip()
         # Reset the tiles list
         self.tiles = []
-<<<<<<< HEAD
         # Store tiletypes for parsing
         tiletypes = []
-=======
->>>>>>> 86602f5e937c65d3882529363f1a4243745f3f5c
         i = 0
         while i < len(lines):
             if lines[i].startswith("@width "):
@@ -109,17 +106,10 @@ class Level:
             elif lines[i].startswith("@tt "):
                 args = lines[i][4:].split(' ')
                 print "TileType: " + str(args)
-<<<<<<< HEAD
                 tiletypes.append(args)
             i += 1
-=======
 
-            i += 1
-
->>>>>>> 86602f5e937c65d3882529363f1a4243745f3f5c
-
-        load_tiletypes(tiletypes)
-
+        self.load_tiletypes(tiletypes)
 
     def load_tiletypes(self, tiletypes):
         return # To be implemented
