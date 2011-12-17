@@ -2,7 +2,7 @@ import pygame
 from pygame.locals import *
 from Tile import *
 
-def Level:
+class Level:
     
     global DEFAULT_TYPEID
     DEFAULT_TYPEID = 0
@@ -15,7 +15,6 @@ def Level:
         self.tiletypes = {} # Dictionary {typeid : Tile() with that typeid}
 
         self.tiles = [] # Array of typeids
-        self.tiles.append(DEFAULT_TYPEID)
 
         self.tilesize = 1 # The edge length of a tile, in pixels
 
@@ -66,7 +65,48 @@ def Level:
         return surf
         
     def load_from_file(self, filename):
-        return # To be implemented
+        try:
+            handle = open(filename, "r")
+        except:
+            print "Failed to open " + filename + " for reading"
+            return
+        lines = [line.strip() for line in handle]
+        handle.close()
+        # Strip leading and trailing whitespace, and trailing comments
+        for line in lines:
+            if line.find("#") == 0:
+                line = ""
+            if line.find("#") > 0:
+                line = line[:line.find("#")-1]
+            line = line.strip()
+        # Reset the tiles list
+        self.tiles = []
+        i = 0
+        while i < len(lines):
+            if lines[i].startswith("@width "):
+                try:
+                    self.width = int(lines[i][7:])
+                    print "Width: " + str(self.width)
+                except:
+                    print "Error reading field `width` while loading " + filename
+            elif lines[i].startswith("@height "):
+                try:
+                    self.height = int(lines[i][8:])
+                    print "Height: " + str(self.height)
+                except:
+                    print "Error reading field `height` while loading" + filename
+            elif lines[i].startswith("@leveldata"):
+                i += 1
+                while i < len(lines) and not lines[i].startswith("@"):
+                    for char in lines[i]:
+                        self.tiles.append(ord(char))
+                    i += 1
+            elif lines[i].startswith("@tt "):
+                args = lines[i][4:].split(' ')
+                print "TileType: " + str(args)
+
+            i += 1
+
 
     def load_tiletypes(self):
         return # To be implemented
