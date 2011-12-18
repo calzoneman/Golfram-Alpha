@@ -11,11 +11,8 @@ class Level:
         self.width = width
         self.height = height
 
-        self.tilemap = {} # Dictionary {typeid : pygame.Surface()}
-        self.tiletypes = {} # Dictionary {typeid : Tile() with that typeid}
-
-        self.tiles = [] # Array of typeids
-
+        self.tiletypes = {} # Dictionary {typeid : TileType() with that typeid}
+        self.tiles = [] # The level data
         self.tilesize = 1 # The edge length of a tile, in pixels
 
     def add_row(self):
@@ -35,12 +32,12 @@ class Level:
         for a in range(cols):    
             self.add_column()
 
-    def get_at(self, xy): # Returns a Tile object
+    def get_at(self, xy): # Returns a TileType object
         if xy[0] >= self.width or xy[1] >= self.height or xy[0] < 0 or xy[1] < 0:
             return None 
         return self.tiletypes[tiles[xy[1]][xy[0]]]
 
-    def set_at(self, xy, t): # t is the typeid, not a Tile object
+    def set_at(self, xy, t): # t is the typeid, not a TileType object
         if xy[0] >= self.width or xy[1] >= self.height or xy[0] < 0 or xy[1] < 0:
             return
         self.tiles[xy[1]][xy[0]] = t
@@ -58,7 +55,7 @@ class Level:
         y = y_offset
         while y < y_offset + height and y < self.height:
             while x < x_offset + width and x < self.width:
-                surf.blit(self.tilemap[self.tiles[y * self.width + x]], (x * self.tilesize, y * self.tilesize))
+                surf.blit(self.tiletypes[self.tiles[y * self.width + x]].get_texture(), (x * self.tilesize, y * self.tilesize))
                 x += 1
             y += 1
         
