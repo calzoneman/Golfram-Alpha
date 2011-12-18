@@ -7,6 +7,7 @@
 44444
 24443
 @texture sprites.png
+@tilesize 16
 @tt char=0 friction=1.0 texture=(0,0)
 @tt char=1 friction=0.240 texture=(16,0)
 @tt char=2 friction=0.300 texture=(0,16)

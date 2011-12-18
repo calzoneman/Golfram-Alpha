@@ -50,14 +50,15 @@ class Level:
         self.set_at(xy, t)
 
     def draw(self, x_offset, y_offset, width, height):
-        surf = pygame.Surface(width * self.tilesize, height * self.tilesize, SRCALPHA)
+        surf = pygame.Surface((width * self.tilesize, height * self.tilesize), SRCALPHA)
         x = x_offset
         y = y_offset
         while y < y_offset + height and y < self.height:
             while x < x_offset + width and x < self.width:
-                surf.blit(self.tiletypes[self.tiles[y * self.width + x]].get_texture(), (x * self.tilesize, y * self.tilesize))
+                surf.blit(self.tiletypes[self.tiles[y * self.width + x]].get_texture(), ((x - x_offset) * self.tilesize, (y - y_offset) * self.tilesize))
                 x += 1
             y += 1
+            x = x_offset
         
         return surf
         
@@ -81,6 +82,7 @@ class Level:
         # Store tiletypes for parsing
         tiletypes = []
         teximage = ""
+        self.tilesize = 1
         i = 0
         while i < len(lines):
             if lines[i].startswith("@width "):
@@ -94,25 +96,39 @@ class Level:
                     self.height = int(lines[i][8:])
                     print "Height: " + str(self.height)
                 except:
-                    print "Error reading field `height` while loading" + filename
+                    print "Error reading field `height` while loading " + filename
             elif lines[i].startswith("@leveldata"):
                 i += 1
                 while i < len(lines) and not lines[i].startswith("@"):
                     for char in lines[i]:
                         self.tiles.append(ord(char))
                     i += 1
+                i -= 1
             elif lines[i].startswith("@texture "):
                 teximage = lines[i][9:]
                 print "Texture image: " + teximage
+            elif lines[i].startswith("@tilesize "):
+                try:
+                    self.tilesize = int(lines[i][10:])
+                    print "Tilesize: " + str(self.tilesize) + "px"
+                except:
+                    print "Error reading field `tilesize` while loading " + filename
             elif lines[i].startswith("@tt "):
                 args = lines[i][4:].split(' ')
                 print "TileType: " + str(args)
                 tiletypes.append(args)
             i += 1
 
-        self.load_tiletypes(teximage, tiletypes)
+        self.load_tiletypes(teximage, self.tilesize, tiletypes)
 
-    def load_tiletypes(self, image, tiletypes):
+    def load_tiletypes(self, imagename, tsize, tiletypes):
+        image = None
+        try:
+            image = pygame.image.load(imagename)
+        except:
+            print "Unable to load spritesheet: " + imagename
+            return
+
         for tt in tiletypes:
             tt_id = 0
             tt_fric = 0.0
@@ -129,6 +145,15 @@ class Level:
                     except:
                         print "Invalid friction value `" + arg[9:] + "` passed for TileType: " + str(tt)
                 elif arg.startswith("texture="):
-                    print "Textures not implemented"
+                    arg = arg[8:] # Remove "texture=" from the parser
+                    arg = arg.strip("()")
+                    x,y = 0,0
+                    try:
+                        x,y = arg.split(',')
+                        x,y = int(x), int(y)
+                    except:
+                        print "Invalid texture definition: " + arg
+                    tt_tex = image.subsurface(pygame.Rect(x, y, tsize, tsize))
+                    self.tiletypes[tt_id] = TileType(tt_id, tt_fric, tt_tex)
         return # To be implemented
 
