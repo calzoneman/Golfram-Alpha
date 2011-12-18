@@ -1,6 +1,6 @@
 import pygame
 from pygame.locals import *
-from Type import *
+from TileType import *
 
 class Level:
     
@@ -80,6 +80,7 @@ class Level:
         self.tiles = []
         # Store tiletypes for parsing
         tiletypes = []
+        teximage = ""
         i = 0
         while i < len(lines):
             if lines[i].startswith("@width "):
@@ -100,14 +101,34 @@ class Level:
                     for char in lines[i]:
                         self.tiles.append(ord(char))
                     i += 1
+            elif lines[i].startswith("@texture "):
+                teximage = lines[i][9:]
+                print "Texture image: " + teximage
             elif lines[i].startswith("@tt "):
                 args = lines[i][4:].split(' ')
                 print "TileType: " + str(args)
                 tiletypes.append(args)
             i += 1
 
-        self.load_tiletypes(tiletypes)
+        self.load_tiletypes(teximage, tiletypes)
 
-    def load_tiletypes(self, tiletypes):
+    def load_tiletypes(self, image, tiletypes):
+        for tt in tiletypes:
+            tt_id = 0
+            tt_fric = 0.0
+            tt_tex = None
+            for arg in tt:
+                if arg.startswith("char="):
+                    if len(arg) < 6:
+                        print "No char specified when trying to load TileType: " + str(tt)
+                    else:
+                        tt_id = ord(arg[5])
+                elif arg.startswith("friction="):
+                    try:
+                        tt_fric = float(arg[9:])
+                    except:
+                        print "Invalid friction value `" + arg[9:] + "` passed for TileType: " + str(tt)
+                elif arg.startswith("texture="):
+                    print "Textures not implemented"
         return # To be implemented
 
