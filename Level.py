@@ -1,6 +1,6 @@
 import pygame
 from pygame.locals import *
-from Tile import *
+from Type import *
 
 class Level:
     
