@@ -63,7 +63,9 @@ class Level:
 
         return surf
 
-    def load_from_file(self, filename):
+    @staticmethod
+    def load_file(filename):
+        """Create a Level object from a level file"""
         f = open(filename, "r")
         lines = [line.strip() for line in f]
         f.close()
@@ -73,32 +75,33 @@ class Level:
                 line = ""
             if line.find("#") > 0:
                 line = line[:line.find("#")-1]
-            line = line.strip()
-        # Reset the tiles list
-        self.tiles = []
+        # Create a new Level object
+        l = Level()
         # Store tiletypes for parsing
         tiletypes = []
         teximage = ""
-        self.tilesize = 1
+        l.tilesize = 1
         i = 0
         while i < len(lines):
             if lines[i].startswith("@width "):
                 try:
-                    self.width = int(lines[i][7:])
-                    print "Width: " + str(self.width)
-                except:
+                    l.width = int(lines[i][7:])
+                except ValueError:
                     print "Error reading field `width` while loading " + filename
+                else:
+                    print "Width: " + str(l.width)
             elif lines[i].startswith("@height "):
                 try:
-                    self.height = int(lines[i][8:])
-                    print "Height: " + str(self.height)
-                except:
+                    l.height = int(lines[i][8:])
+                except ValueError:
                     print "Error reading field `height` while loading " + filename
+                else:
+                    print "Height: " + str(l.height)
             elif lines[i].startswith("@leveldata"):
                 i += 1
                 while i < len(lines) and not lines[i].startswith("@"):
                     for char in lines[i]:
-                        self.tiles.append(ord(char))
+                        l.tiles.append(ord(char))
                     i += 1
                 i -= 1
             elif lines[i].startswith("@texture "):
@@ -106,17 +109,19 @@ class Level:
                 print "Texture image: " + teximage
             elif lines[i].startswith("@tilesize "):
                 try:
-                    self.tilesize = int(lines[i][10:])
-                    print "Tilesize: " + str(self.tilesize) + "px"
-                except:
+                    l.tilesize = int(lines[i][10:])
+                except ValueError:
                     print "Error reading field `tilesize` while loading " + filename
+                else:
+                    print "Tilesize: " + str(l.tilesize) + "px"
             elif lines[i].startswith("@tt "):
                 args = lines[i][4:].split(' ')
                 print "TileType: " + str(args)
                 tiletypes.append(args)
             i += 1
 
-        self.load_tiletypes(teximage, self.tilesize, tiletypes)
+        l.load_tiletypes(teximage, l.tilesize, tiletypes)
+        return l
 
     def load_tiletypes(self, imagename, tsize, tiletypes):
         image = None

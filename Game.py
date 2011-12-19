@@ -11,8 +11,7 @@ class Game:
         self.viewsize = viewsize
     
     def load_level(self, levelname):
-        self.level = Level()
-        self.level.load_from_file(levelname)
+        self.level = Level.load_file(levelname)
 
     def add_player(self, ply):
         self.players.append(ply)
