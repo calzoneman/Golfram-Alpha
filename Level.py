@@ -3,8 +3,7 @@ from pygame.locals import *
 from TileType import *
 
 class Level:
-    
-    global DEFAULT_TYPEID
+
     DEFAULT_TYPEID = 0
 
     def __init__(self, width=1, height=1):
@@ -16,9 +15,9 @@ class Level:
         self.tilesize = 1 # The edge length of a tile, in pixels
 
     def add_row(self):
-        self.tiles.append([DEFAULT_TYPEID for a in range(self.width)])
+        self.tiles.append([Level.DEFAULT_TYPEID for a in range(self.width)])
         self.height += 1
-    
+
     def add_rows(self, rows):
         for a in range(rows):
             self.add_row()
@@ -26,7 +25,7 @@ class Level:
     def add_column(self):
         self.width += 1
         for j in range(len(self.tiles)):
-            self.tiles[j].append(DEFAULT_TYPEID)
+            self.tiles[j].append(Level.DEFAULT_TYPEID)
 
     def add_columns(self, cols):
         for a in range(cols):    
@@ -59,9 +58,9 @@ class Level:
                 x += 1
             y += 1
             x = x_offset
-        
+
         return surf
-        
+
     def load_from_file(self, filename):
         try:
             handle = open(filename, "r")
