@@ -3,13 +3,13 @@ import pygame
 from pygame.locals import *
 
 class Game:
-    
+
     def __init__(self, viewsize, level=None, players=[]):
         self.level = level
         self.players = players
         self.viewoffsetx = self.viewoffsety = 0
         self.viewsize = viewsize
-    
+
     def load_level(self, levelname):
         self.level = Level.load_file(levelname)
 
@@ -23,13 +23,13 @@ class Game:
 
     def tick(self):
         return
-        
+
     def draw(self):
         return self.level.draw(self.viewoffsetx, self.viewoffsety, self.viewsize[0] / self.level.tilesize, self.viewsize[1] / self.level.tilesize)
-    
+
     def scroll_down(self, amt=1):
         self.viewoffsety += amt
-    
+
     def scroll_up(self, amt=1):
         if self.viewoffsety > amt:
             self.viewoffsety -= amt

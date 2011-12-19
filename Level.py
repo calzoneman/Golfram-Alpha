@@ -28,7 +28,7 @@ class Level:
             self.tiles[j].append(Level.DEFAULT_TYPEID)
 
     def add_columns(self, cols):
-        for a in range(cols):    
+        for a in range(cols):
             self.add_column()
 
     def get_at(self, xy): # Returns a TileType object

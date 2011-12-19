@@ -1,7 +1,7 @@
 from pygame import Surface
 
 class TileType:
-    
+
     def __init__(self, typeid, friction=0.1, texture=Surface((1,1))):
         self.typeid = typeid
         self.friction = friction
