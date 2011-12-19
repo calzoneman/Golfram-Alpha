@@ -62,13 +62,9 @@ class Level:
         return surf
 
     def load_from_file(self, filename):
-        try:
-            handle = open(filename, "r")
-        except:
-            print "Failed to open " + filename + " for reading"
-            return
-        lines = [line.strip() for line in handle]
-        handle.close()
+        f = open(filename, "r")
+        lines = [line.strip() for line in f]
+        f.close()
         # Strip leading and trailing whitespace, and trailing comments
         for line in lines:
             if line.find("#") == 0:
