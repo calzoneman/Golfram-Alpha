@@ -32,9 +32,11 @@ class Level:
             self.add_column()
 
     def get_at(self, xy): # Returns a TileType object
-        if xy[0] >= self.width or xy[1] >= self.height or xy[0] < 0 or xy[1] < 0:
-            return None 
-        return self.tiletypes[tiles[xy[1]][xy[0]]]
+        try:
+            tt = self.tiletypes[tiles[xy[1]][xy[0]]]
+        except IndexError:
+            tt = None
+        return tt
 
     def set_at(self, xy, t): # t is the typeid, not a TileType object
         if xy[0] >= self.width or xy[1] >= self.height or xy[0] < 0 or xy[1] < 0:
