@@ -1,6 +1,5 @@
 import pygame
 from pygame.locals import *
-from TileType import *
 
 class Level:
 
@@ -159,3 +158,10 @@ class Level:
                     self.tiletypes[tt_id] = TileType(tt_id, tt_fric, tt_tex)
         return # To be implemented
 
+class Tile:
+    def __init__(self, friction=0.1, texture=None):
+        self.friction = friction
+        if texture:
+            self.texture = texture
+        else:
+            self.texture = pygame.Surface((1,1))
