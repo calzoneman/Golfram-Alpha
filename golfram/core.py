@@ -116,10 +116,7 @@ class Level:
         # Stairs
         width = None
         height = None
-        texture = None
-        tilesize = None
-        leveldata = [  ]
-        tile_defs = {   }
+        leveldata = []
         # Read in the file. Don't catch IO exceptions here... it's up to the
         # code that calls this to decide what to do.
         f = open(filename, 'r')
@@ -133,69 +130,38 @@ class Level:
             if words[0] == '@width':
                 try:
                     width = int(words[1])
-                except ValueError, IndexError:
+                except (ValueError, IndexError):
                     warn("Expected an integer for @width; ignoring", line=ln)
                 else:
                     info("Width: {}".format(width), line=ln)
             elif words[0] == '@height':
                 try:
                     height = int(words[1])
-                except ValueError, IndexError:
+                except (ValueError, IndexError):
                     warn("Expected an integer for @height; ignoring", line=ln)
                 else:
                     info("Height: {}".format(height), line=ln)
-            elif words[0] == '@tt':
-                params = {}
-                for word in words[1:]:
-                    t = word.split('=')
-                    params[t[0]] = t[1]
-                try:
-                    char = params['char']
-                    del params['char']
-                except KeyError:
-                    warn("Expected a char= statement for @tt; ignoring",
-                         line=ln)
-                else:
-                    try:
-                        # COMMENT NEEDED TO EXPLAIN AWKWARD CODE
-                        params['texture_location'] = params['texture']
-                        del params['texture']
-                    except KeyError:
-                        pass
-                    try:
-                        tile_defs[char] = Tile(**params)
-                    except TypeError:
-                        warn("Unexpected parameter for @tt; ignoring", line=ln)
-                    else:
-                        info("Tiletype: char={} {}".format(char, params),
-                             line=ln)
-            elif words[0] == '@texture':
-                try:
-                    texture = pygame.image.load(words[1])
-                except pygame.error as e:
-                    warn("Couldn't load texture {}; ignoring".format(words[1]),
-                         line=ln)
-                else:
-                    info("Texture: {}".format(texture), line=ln)
-            elif words[0] == '@tilesize':
-                try:
-                    tilesize = int(words[1])
-                except ValueError:
-                    warn("Expected an integer for @tilesize; ignoring",
-                         line=ln)
-                else:
-                    info("Tilesize: {}".format(tilesize), line=ln)
+
             elif words[0] == '@leveldata':
                 info("Reading leveldata", line=ln)
                 # Eat all of the leveldata lines
                 try:
-                    while not lines[ln+1].trim().startswith('@'):
+                    while not lines[ln+1].trim().startswith('@endleveldata'):
                         ln += 1
-                        leveldata.append(lines[ln].trim())
+                        leveldata.append(\
+                            lines[ln][:lines[ln].find('#')].trim())
                 except IndexError:
                     # We've reached the end of the file
                     pass
                 info("Stopping reading leveldata", line=ln)
+            elif words[0] == '@tiledefs':
+                try:
+                    info("Attempting to load tile definitions from {}"\
+                        .format(words[1]))
+                except IndexError:
+                    warn("Expected a filename for @tiledefs", line=ln)
+                else:
+                    tile_defs = Level.load_tiledefs(words[1])
             else:
                 warn("Unexpected line; ignoring", line=ln)
         # End parsing loop
@@ -214,101 +180,89 @@ class Level:
             column = 0
         return Level(tiles, width=width, height=height)
 
-#    @staticmethod
-#    def load_file(filename):
-#        """Create a Level object from a level file"""
-#        f = open(filename, "r")
-#        lines = [line.strip() for line in f]
-#        f.close()
-#        # Strip leading and trailing whitespace, and trailing comments
-#        for line in lines:
-#            if line.find("#") == 0:
-#                line = ""
-#            if line.find("#") > 0:
-#                line = line[:line.find("#")-1]
-#        # Create a new Level object
-#        l = Level()
-#        # Store tiletypes for parsing
-#        tiletypes = []
-#        teximage = ""
-#        l.tilesize = 1
-#        i = 0
-#        while i < len(lines):
-#            if lines[i].startswith("@width "):
-#                try:
-#                    l.width = int(lines[i][7:])
-#                except ValueError:
-#                    print "Error reading field `width` while loading " + filename
-#                else:
-#                    print "Width: " + str(l.width)
-#            elif lines[i].startswith("@height "):
-#                try:
-#                    l.height = int(lines[i][8:])
-#                except ValueError:
-#                    print "Error reading field `height` while loading " + filename
-#                else:
-#                    print "Height: " + str(l.height)
-#            elif lines[i].startswith("@leveldata"):
-#                i += 1
-#                while i < len(lines) and not lines[i].startswith("@"):
-#                    for char in lines[i]:
-#                        l.tiles.append(ord(char))
-#                    i += 1
-#                i -= 1
-#            elif lines[i].startswith("@texture "):
-#                teximage = lines[i][9:]
-#                print "Texture image: " + teximage
-#            elif lines[i].startswith("@tilesize "):
-#                try:
-#                    l.tilesize = int(lines[i][10:])
-#                except ValueError:
-#                    print "Error reading field `tilesize` while loading " + filename
-#                else:
-#                    print "Tilesize: " + str(l.tilesize) + "px"
-#            elif lines[i].startswith("@tt "):
-#                args = lines[i][4:].split(' ')
-#                print "TileType: " + str(args)
-#                tiletypes.append(args)
-#            i += 1
-#
-#        l.load_tiletypes(teximage, l.tilesize, tiletypes)
-#        return l
+    @staticmethod
+    def load_tiledefs(filename):
+        f = open(filename, 'r')
+        lines = f.readlines()
+        f.close()
+        # Stairs 2.0
+        texture = None
+        tilesize = None
+        tile_defs = {  }
+        ln = 0
+        while ln < len(lines):
+            ln += 1
+            # Remove comments and split line into words based on whitespace
+            words = lines[ln][:lines[ln].find('#')].split()
+            if words[0] == '@tilesize':
+                try:
+                    tilesize = int(words[1])
+                except ValueError:
+                    warn("Expected an integer for @tilesize; ignoring",
+                         line=ln)
+                else:
+                    info("Tilesize: {}".format(tilesize), line=ln)
+            elif words[0] == '@texture':
+                try:
+                    texture = pygame.image.load(words[1])
+                except pygame.error as e:
+                    warn("Couldn't load texture {}; ignoring"\
+                        .format(words[1]), line=ln)
+                else:
+                    info("Texture: {}".format(texture), line=ln)
+            elif words[0] == '@tt':
+                params = {}
+                for word in words[1:]:
+                    t = word.split('=')
+                    params[t[0]] = t[1]
+                try:
+                    char = params['char']
+                    del params['char']
+                except KeyError:
+                    warn("Expected a char= statement for @tt; ignoring",
+                         line=ln)
+                else:
+                    try:
+                        # params['texture'] needs to be the actual image,
+                        # not the coordinates specified by the @texture
+                        # field in the tiledefs file
+                        texture_args = params['texture']\
+                            .strip("()")\
+                            .split(',')
+                        x, y = int(texture_args[0]), int(texture_args[1])
 
-#    def load_tiletypes(self, imagename, tsize, tiletypes):
-#        image = None
-#        try:
-#            image = pygame.image.load(imagename)
-#        except:
-#            print "Unable to load spritesheet: " + imagename
-#            return
-#
-#        for tt in tiletypes:
-#            tt_id = 0
-#            tt_fric = 0.0
-#            tt_tex = None
-#            for arg in tt:
-#                if arg.startswith("char="):
-#                    if len(arg) < 6:
-#                        print "No char specified when trying to load TileType: " + str(tt)
-#                    else:
-#                        tt_id = ord(arg[5])
-#                elif arg.startswith("friction="):
-#                    try:
-#                        tt_fric = float(arg[9:])
-#                    except:
-#                        print "Invalid friction value `" + arg[9:] + "` passed for TileType: " + str(tt)
-#                elif arg.startswith("texture="):
-#                    arg = arg[8:] # Remove "texture=" from the parser
-#                    arg = arg.strip("()")
-#                    x,y = 0,0
-#                    try:
-#                        x,y = arg.split(',')
-#                        x,y = int(x), int(y)
-#                    except:
-#                        print "Invalid texture definition: " + arg
-#                    tt_tex = image.subsurface(pygame.Rect(x, y, tsize, tsize))
-#                    self.tiletypes[tt_id] = TileType(tt_id, tt_fric, tt_tex)
-#        return # To be implemented
+                        params['texture_location'] = (x, y)
+                        del params['texture']
+                    except KeyError:
+                        pass
+                    except ValueError:
+                        warn("Invalid position specified for tile texture;\
+                            skipping", line=ln)
+                    else:
+                        try:
+                            params['texture'] = texture.subsurface(\
+                            pygame.Rect(
+                            params['texture_location'][0],\
+                            params['texture_location'][1],\
+                            tilesize,\
+                            tilesize))
+                        except AttributeError:
+                            warn("Attempted to define tile texture without\
+                            a texture image specified; skipping", line=ln)
+                        except ValueError:
+                            warn("Attempted to define tile texture without\
+                            a tilesize defined; skipping", line=ln)
+                        else:
+                            try:
+                                tile_defs[char] = Tile(**params)
+                            except TypeError:
+                                warn("Unexpected parameter for @tt;\
+                                    ignoring", line=ln)
+                            else:
+                                info("Tiletype: char={} {}"\
+                                    .format(char, params), line=ln)
+
+
 
 class Tile:
 

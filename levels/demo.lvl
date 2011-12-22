@@ -1,15 +1,9 @@
 @width 5
 @height 5
-@leveldata
-04441
-44444
-44444
-44444
-24443
 @texture sprites.png
-@tilesize 16
-@tt char=0 friction=1.0 texture=(0,0)
-@tt char=1 friction=0.240 texture=(16,0)
-@tt char=2 friction=0.300 texture=(0,16)
-@tt char=3 friction=0.667 texture=(16,16)
-@tt char=4 friction=-0.100 texture=(32,0)
+@leveldata
+12223
+40ac6
+40gj6
+40006
+78889
