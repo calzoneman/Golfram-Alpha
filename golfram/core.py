@@ -45,24 +45,39 @@ class Level:
     def get_tile(self, row, column):
         """Return the tile at the given coordinates
 
-        This will raise IndexError if the row and column are out of bounds.
+        Returns None if an IndexError occurs
 
         Hint: You can use tuple unpacking when you call the function.
         coordinates = (x, y)
         level.get_tile(**coordinates)
 
         """
-        return self._tiles[row][column]
+        try:
+            return self._tiles[row][column]
+        except IndexError:
+            return None
 
     def set_tile(self, row, column, tile):
         """Set the tile at the given coordinates
 
-        This will raise IndexError if the row and column are out of bounds.
+        Returns True if the setting is successful, False if it is not.
 
         """
-        self._tiles[row][column] = tile
+        try:
+            self._tiles[row][column] = tile
+        except IndexError:
+            return False
+        # Note: If you know of a good way to make sure 'tile' is actually
+        # an instance of Tile(), please add a check for that
+        else:
+            return True
 
     def expand_and_set(self, xy, t):
+        """ Deprecated
+
+        Left here for reference when building future functions
+
+        """
         if xy[0] >= self.width:
             self.add_columns(xy[0] - self.width + 1)
         if xy[1] >= self.height:
@@ -96,7 +111,7 @@ class Level:
 #        return surf
 
     @staticmethod
-    load_file(filename):
+    def load_file(filename):
         """Create a Level object from a level file"""
         # Stairs
         width = None
@@ -110,10 +125,11 @@ class Level:
         f = open(filename, 'r')
         lines = f.readlines()
         f.close()
+        ln = 0
         while ln < len(lines):
             ln += 1
             # Remove comments and split line into words based on whitespace
-            words = lines[ln][:line.find('#')].split()
+            words = lines[ln][:lines[ln].find('#')].split()
             if words[0] == '@width':
                 try:
                     width = int(words[1])
@@ -295,11 +311,13 @@ class Level:
 #        return # To be implemented
 
 class Tile:
+
     def __init__(self, friction=0.1, texture=None):
         try:
             self.friction = float(friction)
         except ValueError:
-            warn("Invalid friction value: {}".format(friction))
+            warn("Invalid friction value: {}, defaulting to 0.1"\
+                .format(friction))
             self.friction = 0.1
         if texture:
             self.texture = texture

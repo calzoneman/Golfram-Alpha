@@ -6,7 +6,7 @@ def warn(message, **kwargs):
 def info(message, **kwargs):
     _print_message(message, 'info', sys.stderr, **kwargs)
 
-def _print_message(message, type, file, *, line=None)
+def _print_message(message, type, file, *, line=None):
     message = str(message)
     if line:
         message = "[type] {}: ".format(line) + message
