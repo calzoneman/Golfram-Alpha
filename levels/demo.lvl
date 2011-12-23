@@ -1,6 +1,6 @@
 @width 5
 @height 5
-@texture sprites.png
+@tiledefs demo.tiledefs
 @leveldata
 12223
 40ac6
