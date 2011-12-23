@@ -10,5 +10,5 @@ def info(message, **kwargs):
 def _print_message(message, type, file, line=None):
     message = str(message)
     if line:
-        message = "[type] {}: {}".format(line, message)
+        message = "[{}] line {}: {}".format(type, line, message)
     print(message, file=file)

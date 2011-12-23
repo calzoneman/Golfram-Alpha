@@ -15,13 +15,18 @@ from golfram.util import warn, info
 
 class Level:
 
-    def __init__(self, tiles=None, *, width=1, height=1):
+    def __init__(self, tiles=None, tiletypes=None, tilesize=1, width=1, height=1):
         self.width = width
         self.height = height
-
-        self.tiletypes = {} # Dictionary {typeid : TileType() with that typeid}
-        self._tiles = [] # The level data
         self.tilesize = 1 # The edge length of a tile, in pixels
+
+        self.tiletypes = tiletype
+        if not self.tiletypes:
+            self.tiletypes = {}
+
+        self._tiles = tiles # The level data
+        if not self._tiles:
+            self._tiles = []
 
     def px(self, tile_units):
         """Return the pixels equivalent of a dimension in tile units"""
@@ -116,7 +121,9 @@ class Level:
         # Stairs
         width = None
         height = None
-        leveldata = []
+        tilesize= None
+        leveldata = [ ]
+        tile_defs = {  }
         # Read in the file. Don't catch IO exceptions here... it's up to the
         # code that calls this to decide what to do.
         f = open(filename, 'r')
@@ -124,7 +131,6 @@ class Level:
         f.close()
         ln = 0
         while ln < len(lines):
-            ln += 1
             # Remove comments and split line into words based on whitespace
             words = lines[ln][:lines[ln].find('#')].split()
             if words[0] == '@width':
@@ -146,10 +152,10 @@ class Level:
                 info("Reading leveldata", line=ln)
                 # Eat all of the leveldata lines
                 try:
-                    while not lines[ln+1].trim().startswith('@endleveldata'):
+                    while not lines[ln+1].strip().startswith('@endleveldata'):
                         ln += 1
                         leveldata.append(\
-                            lines[ln][:lines[ln].find('#')].trim())
+                            lines[ln][:lines[ln].find('#')].strip())
                 except IndexError:
                     # We've reached the end of the file
                     pass
@@ -161,9 +167,13 @@ class Level:
                 except IndexError:
                     warn("Expected a filename for @tiledefs", line=ln)
                 else:
-                    tile_defs = Level.load_tiledefs(words[1])
+                    tile_defs, tilesize = Level.load_tiledefs(words[1])
+            elif words[0] == '@endleveldata':
+                pass
             else:
                 warn("Unexpected line; ignoring", line=ln)
+
+            ln += 1
         # End parsing loop
         # Build the array of tiles
         tiles = []
@@ -178,7 +188,7 @@ class Level:
                 column += 1
             row += 1
             column = 0
-        return Level(tiles, width=width, height=height)
+        return Level(tiles, tile_defs, tilesize, width, height)
 
     @staticmethod
     def load_tiledefs(filename):
@@ -191,7 +201,6 @@ class Level:
         tile_defs = {  }
         ln = 0
         while ln < len(lines):
-            ln += 1
             # Remove comments and split line into words based on whitespace
             words = lines[ln][:lines[ln].find('#')].split()
             if words[0] == '@tilesize':
@@ -261,6 +270,10 @@ class Level:
                             else:
                                 info("Tiletype: char={} {}"\
                                     .format(char, params), line=ln)
+            ln += 1
+
+        return tilesize, tile_defs
+
 
 
 
