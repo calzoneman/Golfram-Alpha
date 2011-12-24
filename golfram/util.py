@@ -8,7 +8,7 @@ def warn(message, **kwargs):
 
 def info(message, **kwargs):
     """Print a message explaining normal operation"""
-    _print_message(message, 'info', sys.stderr, **kwargs)
+    _print_message(message, 'info', sys.stdout, **kwargs)
 
 def error(message, **kwargs):
     """Print a message explaining a critical error"""
