@@ -13,10 +13,10 @@ from pygame.locals import *
 
 from golfram.util import absolute_path, info, warn
 
-
 class Level:
 
-    def __init__(self, tiles=None, tiletypes=None, tilesize=1, width=1, height=1):
+    def __init__(self, tiles=None, tiletypes=None, tilesize=1, width=1,
+                 height=1):
         self.width = width
         self.height = height
         self.tilesize = tilesize # The edge length of a tile, in pixels
@@ -120,12 +120,11 @@ class Level:
     def load_file(filename):
         """Create a Level object from a level file"""
         filename = absolute_path(filename, "level")
-        # Stairs
         width = None
         height = None
-        tilesize= None
+        tilesize = None
         leveldata = [ ]
-        tile_defs = {  }
+        tile_defs = { }
         # Read in the file. Don't catch IO exceptions here... it's up to the
         # code that calls this to decide what to do.
         f = open(filename, 'r')
@@ -139,14 +138,16 @@ class Level:
                 try:
                     width = int(words[1])
                 except (ValueError, IndexError):
-                    warn("Expected an integer for @width; ignoring", line=ln, file=filename)
+                    warn("Expected an integer for @width; ignoring", line=ln,
+                         file=filename)
                 else:
                     info("Width: {}".format(width), line=ln, file=filename)
             elif words[0] == '@height':
                 try:
                     height = int(words[1])
                 except (ValueError, IndexError):
-                    warn("Expected an integer for @height; ignoring", line=ln, file=filename)
+                    warn("Expected an integer for @height; ignoring", line=ln,
+                         file=filename)
                 else:
                     info("Height: {}".format(height), line=ln, file=filename)
 
@@ -164,10 +165,10 @@ class Level:
                 info("Stopping reading leveldata", line=ln, file=filename)
             elif words[0] == '@tiledefs':
                 try:
-                    info("Attempting to load tile definitions from {}"\
-                        .format(words[1]))
+                    info("Loading tile definitions from {}".format(words[1]))
                 except IndexError:
-                    warn("Expected a filename for @tiledefs", line=ln, file=filename)
+                    warn("Expected a filename for @tiledefs", line=ln,
+                         file=filename)
                 else:
                     tilesize, tile_defs = Level.load_tiledefs(words[1])
                     info("Loaded tile definitions", line=ln, file=filename)
@@ -197,10 +198,9 @@ class Level:
         f = open(filename, 'r')
         lines = [None] + f.readlines()
         f.close()
-        # Stairs 2.0
         texture = None
         tilesize = None
-        tile_defs = {  }
+        tile_defs = { }
         ln = 1
         while ln < len(lines):
             # Remove comments and split line into words based on whitespace
@@ -212,14 +212,15 @@ class Level:
                     warn("Expected an integer for @tilesize; ignoring",
                          line=ln, file=filename)
                 else:
-                    info("Tilesize: {}".format(tilesize), line=ln, file=filename)
+                    info("Tilesize: {}".format(tilesize), line=ln,
+                         file=filename)
             elif words[0] == '@texture':
                 try:
-                    texture = pygame.image.load(\
-                        absolute_path(words[1], "level"))
+                    texture = pygame.image.load(absolute_path(words[1],
+                                                              "level"))
                 except pygame.error as e:
-                    warn("Couldn't load texture {}; ignoring"\
-                        .format(words[1]), line=ln, file=filename)
+                    warn("Couldn't load texture {}; ignoring".format(words[1]),
+                         line=ln, file=filename)
                 else:
                     info("Texture: {}".format(texture), line=ln, file=filename)
             elif words[0] == '@tt':
@@ -238,9 +239,7 @@ class Level:
                         # params['texture'] needs to be the actual image,
                         # not the coordinates specified by the @texture
                         # field in the tiledefs file
-                        texture_args = params['texture']\
-                            .strip("()")\
-                            .split(',')
+                        texture_args = params['texture'].strip("()").split(',')
                         x, y = int(texture_args[0]), int(texture_args[1])
 
                         params['texture_location'] = (x, y)
@@ -248,33 +247,33 @@ class Level:
                     except KeyError:
                         pass
                     except ValueError:
-                        warn("Invalid position specified for tile texture;\
-                            skipping", line=ln, file=filename)
+                        warn("Invalid position for tile texture; skipping",
+                             line=ln, file=filename)
                     else:
                         try:
-                            params['texture'] = texture.subsurface(\
-                            pygame.Rect(
-                            params['texture_location'][0],\
-                            params['texture_location'][1],\
-                            tilesize,\
-                            tilesize))
+                            params['texture'] = texture.subsurface(
+                                    pygame.Rect(params['texture_location'][0],
+                                                params['texture_location'][1],
+                                                tilesize, tilesize))
                         except AttributeError:
-                            warn("Attempted to define tile texture without\
-                            a texture image specified; skipping", line=ln, file=filename)
+                            warn("Attempted to define tile texture without a" +
+                                 "texture image specified; skipping", line=ln,
+                                 file=filename)
                         except ValueError:
-                            warn("Attempted to define tile texture without\
-                            a tilesize defined; skipping", line=ln, file=filename)
+                            warn("Attempted to define tile texture without a" +
+                                 "tilesize defined; skipping", line=ln,
+                                 file=filename)
                         else:
                             del params['texture_location']
                             try:
                                 tile_defs[char] = Tile(**params)
                             except TypeError:
-                                warn("Unexpected parameter for @tt;\
-                                    ignoring", line=ln, file=filename)
+                                warn("Unexpected parameter for @tt; ignoring",
+                                     line=ln, file=filename)
                                 warn(str(params), line=ln, file=filename)
                             else:
-                                info("Tiletype: char={} {}"\
-                                    .format(char, params), line=ln, file=filename)
+                                info("Tiletype: char={} {}".format(char, params),
+                                     line=ln, file=filename)
             ln += 1
 
         return tilesize, tile_defs
@@ -288,8 +287,7 @@ class Tile:
         try:
             self.friction = float(friction)
         except ValueError:
-            warn("Invalid friction value: {}, defaulting to 0.1"\
-                .format(friction))
+            warn("Invalid friction value: {}, assuming 0.1".format(friction))
             self.friction = 0.1
         if texture:
             self.texture = texture
