@@ -1,32 +1,37 @@
 from __future__ import print_function
-import os, sys
+import os
+import sys
 
 def warn(message, **kwargs):
-    _print_message(message, 'error', sys.stderr, **kwargs)
+    """Print a message explaining a non-critical error"""
+    _print_message(message, 'warn', sys.stderr, **kwargs)
 
 def info(message, **kwargs):
+    """Print a message explaining normal operation"""
     _print_message(message, 'info', sys.stderr, **kwargs)
 
-def _print_message(message, type, file, line=None, infile=None):
-    message = str(message)
-    if line and infile:
-        message = "[{}] {} line {}: {}".format(type, infile, line, message)
+def error(message, **kwargs):
+    """Print a message explaining a critical error"""
+    _print_message(message, 'error', sys.stderr, **kwargs)
+
+def _print_message(message, message_type, output_file, line=None, file=None):
+    if line and file:
+        template = '[{file}:{line}] {type}: {message}'
+    elif file:
+        template = '[{file}] {type}: {message}'
+    else:
+        template = '{type}: {message}'
+    message = template.format(type=message_type, file=output_file, line=line,
+                              message=message)
     print(message, file=file)
 
-class Path: # Heh, classpath
-    PATH_BASE = os.getcwd()
-    PATH_LEVELS = os.path.join(PATH_BASE, "levels")
-
-    @staticmethod
-    def resolve_path(path, type=""):
-        if type == "":
-            if not path.startswith(Path.PATH_BASE):
-                path = os.path.join(Path.PATH_BASE, path)
-            return path
-        elif type == "levels":
-            if not path.startswith(Path.PATH_LEVELS):
-                path = os.path.join(Path.PATH_LEVELS, path)
-            return path
-        else:
-            warn("Unknown path type: {}; ignoring".format(type))
-            return ""
+def absolute_path(filename, filetype=None):
+    """Return the absolute path to the file of the specified type"""
+    base = os.getcwd()
+    if filetype == 'level':
+        path = os.path.join(base, 'levels', filename)
+    elif filetype == 'tiledef':
+        path = os.path.join(base, 'levels', filename)
+    else:
+        path = os.path.join(base, filename)
+    return path
