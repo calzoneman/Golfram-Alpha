@@ -257,11 +257,11 @@ class Level:
                                                 tilesize, tilesize))
                         except AttributeError:
                             warn("Attempted to define tile texture without a" +
-                                 "texture image specified; skipping", line=ln,
+                                 " texture image specified; skipping", line=ln,
                                  file=filename)
                         except ValueError:
                             warn("Attempted to define tile texture without a" +
-                                 "tilesize defined; skipping", line=ln,
+                                 " tilesize defined; skipping", line=ln,
                                  file=filename)
                         else:
                             del params['texture_location']
