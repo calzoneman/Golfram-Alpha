@@ -21,8 +21,8 @@ def _print_message(message, message_type, output_file, line=None, file=None):
         template = '[{file}] {type}: {message}'
     else:
         template = '{type}: {message}'
-    message = template.format(type=message_type, file=output_file, line=line,
-                              message=message)
+    message = template.format(type=message_type, file=filename_only(file)\
+        , line=line, message=message)
     print(message, file=output_file)
 
 def absolute_path(filename, filetype=None):
@@ -35,3 +35,8 @@ def absolute_path(filename, filetype=None):
     else:
         path = os.path.join(base, filename)
     return path
+
+def filename_only(path):
+    if not path:
+        return None
+    return path[path.rfind(os.sep)+1:]

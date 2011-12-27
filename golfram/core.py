@@ -96,18 +96,22 @@ class Level:
             self.add_rows(xy[1] - self.height + 1)
         self.set_at(xy, t)
 
-    def draw(self, row_start, column_start, rows, columns):
-        surface = pygame.Surface((self.px(rows), self.px(columns)), SRCALPHA)
+    def draw(self, row_start=0, column_start=0, rows=None, columns=None):
+        if not rows:
+            rows = self.width - row_start
+        if not columns:
+            columns = self.height - column_start
+        surface = pygame.Surface((self.tiles_to_px(rows), self.tiles_to_px(columns)), SRCALPHA)
         row = row_start
         column = column_start
         while row < row_start + rows and row < self.height:
             while column < column_start + columns and column < self.width:
                 surface.blit(self.get_tile(row, column).texture,
-                             (px(column - column_start), px(row - row_start)))
+                             (self.tiles_to_px(column - column_start), self.tiles_to_px(row - row_start)))
                 column += 1
             row += 1
             column = column_start
-        return surf
+        return surface
 
 #    def draw(self, x_offset, y_offset, width, height):
 #        surf = pygame.Surface((width * self.tilesize, height * self.tilesize), SRCALPHA)
