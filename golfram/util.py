@@ -23,7 +23,7 @@ def _print_message(message, message_type, output_file, line=None, file=None):
         template = '{type}: {message}'
     message = template.format(type=message_type, file=output_file, line=line,
                               message=message)
-    print(message, file=file)
+    print(message, file=output_file)
 
 def absolute_path(filename, filetype=None):
     """Return the absolute path to the file of the specified type"""

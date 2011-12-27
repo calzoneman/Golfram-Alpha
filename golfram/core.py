@@ -35,8 +35,8 @@ class Level:
 
     def tile_under_px(self, px_x, px_y):
         """Return the Tile underneath the position specified in pixels"""
-        row =    px_y / self.tilesize
-        column = px_x / self.tilesize
+        row =    int(px_y / self.tilesize)
+        column = int(px_x / self.tilesize)
         return self.get_tile(row, column)
 
     def append_row(self, tile=None):
@@ -302,9 +302,11 @@ class Tile:
 
 class Ball:
 
-    def __init__(self, sprite=None, position=[0, 0], mass=0.25):
+    def __init__(self, sprite=None, position=None, mass=0.46):
         if not sprite:
             sprite = pygame.Surface((1,1))
+        if not position:
+            position = [-1, -1]
         self.sprite = sprite
         self.mass = mass
         self.position = position
@@ -314,10 +316,3 @@ class Ball:
     def apply_force(self, force=[0, 0]):
         self.acceleration[0] += force[0] / self.mass
         self.acceleration[1] += force[1] / self.mass
-
-    def tick(self, dt=1/60.0):
-        self.position[0] += self.velocity[0] * dt + self.acceleration[0] * dt**2
-        self.position[1] += self.velocity[1] * dt + self.acceleration[1] * dt**2
-
-        self.velocity[0] += self.acceleration[0] * dt
-        self.velocity[1] += self.acceleration[1] * dt
