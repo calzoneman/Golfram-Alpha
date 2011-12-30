@@ -35,8 +35,8 @@ class Level:
 
     def tile_under_px(self, px_x, px_y):
         """Return the Tile underneath the position specified in pixels"""
-        row =    int(px_y / self.tilesize)
-        column = int(px_x / self.tilesize)
+        row =    int(px_y // self.tilesize)
+        column = int(px_x // self.tilesize)
         return self.get_tile(row, column)
 
     def append_row(self, tile=None):
