@@ -61,7 +61,7 @@ class Level:
 
         Hint: You can use tuple unpacking when you call the function.
         coordinates = (x, y)
-        level.get_tile(**coordinates)
+        level.get_tile(*coordinates)
 
         """
         try:
