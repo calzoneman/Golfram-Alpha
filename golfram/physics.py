@@ -13,18 +13,18 @@ class God:
     def tick(self, dt=1/60.0):
         for obj in self.tracked_objects:
             # Calculate position
-            obj.position[0] += obj.velocity[0] * dt \
-                + obj.acceleration[0] * dt**2
-            obj.position[1] += obj.velocity[1] * dt \
-                + obj.acceleration[1] * dt**2
+            obj.position[0] += (obj.velocity[0] * dt +
+                                obj.acceleration[0] * dt**2)
+            obj.position[1] += (obj.velocity[1] * dt +
+                                obj.acceleration[1] * dt**2)
             # Calculate velocity
             obj.velocity[0] += obj.acceleration[0] * dt
             obj.velocity[1] += obj.acceleration[1] * dt
 
             # Reset the acceleration and apply friction for the next frame
             obj.acceleration = [0, 0]
-            if int(obj.velocity[0]) is not 0 \
-            and int(obj.velocity[1]) is not 0:
+            if (int(obj.velocity[0]) is not 0 and
+                int(obj.velocity[1]) is not 0):
                 mu = self.level.tile_under_px(*obj.position).friction
 
                 # Resolve direction
