@@ -40,6 +40,16 @@ class Level:
         column = int(px_x // self.tilesize)
         return self.get_tile(row, column)
 
+    def tile_at_position(self, position):
+        """Return the tile at the given position.
+
+        position is a point.
+
+        """
+        # Convert the coordinates of position to tile row/column, then return
+        # the tile.
+        raise NotImplemented()
+
     def append_row(self, tile=None):
         """Append a row of the given tile to the level"""
         if not tile:
