@@ -317,6 +317,18 @@ class Tile:
         force = object.mass * self.friction * direction
         return force
 
+class BoostTile(Tile):
+
+    def __init__(self, texture, friction, boost_force):
+        self.texture = texture
+        self.friction = friction
+        self.boost_force = boost_force
+
+    def force_on_object(self, object):
+        frictional_force = super(BoostTile, self).force_on_object(object)
+        # Should the boost force depend on the object's mass? For now... no.
+        return frictional_force + self.boost_force
+
 class Ball:
 
     def __init__(self, sprite=None, position=None, mass=0.46):
