@@ -8,6 +8,7 @@ Doctests:
 True
 
 """
+from euclid import Vector2
 import pygame
 from pygame.locals import *
 
@@ -303,6 +304,18 @@ class Tile:
             self.texture = texture
         else:
             self.texture = pygame.Surface((1,1))
+
+    def force_on_object(self, object):
+        """Calculate the frictional force applied by self to object.
+
+        object must have the following properties:
+         - mass, a scalar
+         - velocity, a vector
+
+        """
+        direction = object.velocity.normalized() * -1
+        force = object.mass * self.friction * direction
+        return force
 
 class Ball:
 
