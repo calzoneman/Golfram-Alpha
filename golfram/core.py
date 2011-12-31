@@ -331,17 +331,16 @@ class BoostTile(Tile):
 
 class Ball:
 
-    def __init__(self, sprite=None, position=None, mass=0.46):
+    def __init__(self, sprite=None, position=None, mass=0.0459):
         if not sprite:
             sprite = pygame.Surface((1,1))
         if not position:
-            position = [-1, -1]
+            position = Point2(0, 0)
         self.sprite = sprite
         self.mass = mass
         self.position = position
-        self.velocity = [0, 0]
-        self.acceleration = [0, 0]
+        self.velocity = Vector2(0, 0)
+        self.acceleration = Vector2(0, 0)
 
-    def apply_force(self, force=[0, 0]):
-        self.acceleration[0] += force[0] / self.mass
-        self.acceleration[1] += force[1] / self.mass
+    def apply_force(self, force):
+        self.acceleration += force
