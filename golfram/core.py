@@ -340,7 +340,3 @@ class Ball:
         self.mass = mass
         self.position = position
         self.velocity = Vector2(0, 0)
-        self.acceleration = Vector2(0, 0)
-
-    def apply_force(self, force):
-        self.acceleration += force
