@@ -10,7 +10,6 @@ True
 """
 from euclid import Vector2
 import pygame
-from pygame.locals import *
 
 from golfram.util import absolute_path, info, warn
 
@@ -112,7 +111,7 @@ class Level:
             rows = self.width - row_start
         if not columns:
             columns = self.height - column_start
-        surface = pygame.Surface((self.tiles_to_px(rows), self.tiles_to_px(columns)), SRCALPHA)
+        surface = pygame.Surface((self.tiles_to_px(rows), self.tiles_to_px(columns)), pygame.SRCALPHA)
         row = row_start
         column = column_start
         while row < row_start + rows and row < self.height:
