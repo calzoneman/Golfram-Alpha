@@ -8,7 +8,7 @@ Doctests:
 True
 
 """
-from euclid import Vector2
+from euclid import Point2, Vector2
 import pygame
 
 from golfram.util import absolute_path, info, warn
