@@ -8,8 +8,8 @@ Doctests:
 True
 
 """
+from euclid import Vector2
 import pygame
-from pygame.locals import *
 
 from golfram.util import absolute_path, info, warn
 
@@ -38,6 +38,16 @@ class Level:
         row =    int(px_y // self.tilesize)
         column = int(px_x // self.tilesize)
         return self.get_tile(row, column)
+
+    def tile_at_position(self, position):
+        """Return the tile at the given position.
+
+        position is a point.
+
+        """
+        # Convert the coordinates of position to tile row/column, then return
+        # the tile.
+        raise NotImplemented()
 
     def append_row(self, tile=None):
         """Append a row of the given tile to the level"""
@@ -101,7 +111,7 @@ class Level:
             rows = self.width - row_start
         if not columns:
             columns = self.height - column_start
-        surface = pygame.Surface((self.tiles_to_px(rows), self.tiles_to_px(columns)), SRCALPHA)
+        surface = pygame.Surface((self.tiles_to_px(rows), self.tiles_to_px(columns)), pygame.SRCALPHA)
         row = row_start
         column = column_start
         while row < row_start + rows and row < self.height:
@@ -304,19 +314,38 @@ class Tile:
         else:
             self.texture = pygame.Surface((1,1))
 
+    def force_on_object(self, object):
+        """Calculate the frictional force applied by self to object.
+
+        object must have the following properties:
+         - mass, a scalar
+         - velocity, a vector
+
+        """
+        direction = object.velocity.normalized() * -1
+        force = object.mass * self.friction * direction
+        return force
+
+class BoostTile(Tile):
+
+    def __init__(self, texture, friction, boost_force):
+        self.texture = texture
+        self.friction = friction
+        self.boost_force = boost_force
+
+    def force_on_object(self, object):
+        frictional_force = super(BoostTile, self).force_on_object(object)
+        # Should the boost force depend on the object's mass? For now... no.
+        return frictional_force + self.boost_force
+
 class Ball:
 
-    def __init__(self, sprite=None, position=None, mass=0.46):
+    def __init__(self, sprite=None, position=None, mass=0.0459):
         if not sprite:
             sprite = pygame.Surface((1,1))
         if not position:
-            position = [-1, -1]
+            position = Point2(0, 0)
         self.sprite = sprite
         self.mass = mass
         self.position = position
-        self.velocity = [0, 0]
-        self.acceleration = [0, 0]
-
-    def apply_force(self, force=[0, 0]):
-        self.acceleration[0] += force[0] / self.mass
-        self.acceleration[1] += force[1] / self.mass
+        self.velocity = Vector2(0, 0)
