@@ -15,15 +15,11 @@ from golfram.util import absolute_path, info, warn
 
 class Level:
 
-    def __init__(self, tiles=None, tiletypes=None, tilesize=1, width=1,
+    def __init__(self, tiles=None, tilesize=1, width=1,
                  height=1):
         self.width = width
         self.height = height
         self.tilesize = tilesize # The edge length of a tile, in pixels
-
-        self.tiletypes = tiletypes
-        if not self.tiletypes:
-            self.tiletypes = {}
 
         self._tiles = tiles # The level data
         if not self._tiles:
@@ -299,8 +295,6 @@ class Level:
         return tilesize, tile_defs
 
 
-
-
 class Tile:
 
     def __init__(self, friction=0.1, texture=None):
@@ -325,6 +319,7 @@ class Tile:
         direction = object.velocity.normalized() * -1
         force = object.mass * self.friction * direction
         return force
+
 
 class BoostTile(Tile):
 
