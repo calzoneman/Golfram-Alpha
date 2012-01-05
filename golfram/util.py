@@ -45,3 +45,8 @@ def basename(filename):
         return ""
     else:
         return os.path.basename(filename)
+
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()

@@ -349,3 +349,8 @@ class Ball:
         self.mass = mass
         self.position = position
         self.velocity = Vector2(0, 0)
+
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()

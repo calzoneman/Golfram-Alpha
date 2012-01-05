@@ -20,3 +20,8 @@ class God:
             v = object.velocity
             dr = v * dt
             object.position += dr
+
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()

@@ -40,3 +40,8 @@ class Game:
     def scroll_right(self, amt=1):
         if self.viewoffsetx > amt:
             self.viewoffsetx -= amt
+
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
