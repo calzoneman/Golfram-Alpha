@@ -1,11 +1,14 @@
 """The core classes for Golfram Alpha (Level, Tile, Ball, etc.)
 
 Doctests:
->>> t = Tile(size=1)
->>> level = Level([[t,t,t]] * 3)
->>> coordinates = (3, 7)
->>> level.get_tile(**coordinates) is t
-True
+
+Get a Tile based on its row/column:
+
+    >>> t = Tile()
+    >>> level = Level([[t,t,t]] * 3)
+    >>> row, column = 0, 2
+    >>> level.get_tile(row, column) is t
+    True
 
 """
 from euclid import Point2, Vector2
@@ -298,11 +301,7 @@ class Level:
 class Tile:
 
     def __init__(self, friction=0.1, texture=None):
-        try:
-            self.friction = float(friction)
-        except ValueError:
-            warn("Invalid friction value: {}, assuming 0.1".format(friction))
-            self.friction = 0.1
+        self.friction = float(friction)
         if texture:
             self.texture = texture
         else:
