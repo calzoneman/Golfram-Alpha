@@ -335,16 +335,23 @@ class BoostTile(Tile):
         # Should the boost force depend on the object's mass? For now... no.
         return frictional_force + self.boost_force
 
+
 class Ball:
 
-    def __init__(self, sprite=None, position=None, mass=0.0459):
+    DEFAULT_MASS = 0.0459 # kg
+    DEFAULT_DIAMETER = 0.0427 # m
+    DEFAULT_SIZE = 8 # px
+
+    def __init__(self, sprite=None, position=None, mass=DEFAULT_MASS,
+                 diameter=DEFAULT_DIAMETER):
         if not sprite:
-            sprite = pygame.Surface((1,1))
+            sprite = pygame.Surface((DEFAULT_SIZE, DEFAULT_SIZE))
+        self.sprite = sprite
         if not position:
             position = Point2(0, 0)
-        self.sprite = sprite
-        self.mass = mass
         self.position = position
+        self.mass = float(mass)
+        self.diameter = float(diameter)
         self.velocity = Vector2(0, 0)
 
 
