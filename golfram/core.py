@@ -10,6 +10,18 @@ Get a Tile based on its row/column:
     >>> level.get_tile(row, column) is t
     True
 
+Level.tile_at_point():
+
+    >>> t1 = Tile()
+    >>> t2 = Tile()
+    >>> t3 = Tile()
+    >>> l = Level([[t1],[t2],[t3]])
+    >>> x = l.tilesize * 0.5 / l.pixels_per_meter
+    >>> y = l.tilesize * 2.5 / l.pixels_per_meter
+    >>> p = Point2(x, y)
+    >>> l.tile_at_point(p) is t3
+    True
+
 """
 from euclid import Point2, Vector2
 import pygame
@@ -47,8 +59,8 @@ class Level:
         point is a Point2 instance, point.x and point.y are in meters.
 
         """
-        row = position.y * self.pixels_per_meter // self.tilesize
-        column = position.x * self.pixels_per_meter // self.tilesize
+        row = int(point.y * self.pixels_per_meter // self.tilesize)
+        column = int(point.x * self.pixels_per_meter // self.tilesize)
         return self.get_tile(row, column)
 
     def append_row(self, tile=None):
