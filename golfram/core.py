@@ -18,15 +18,18 @@ from golfram.util import absolute_path, info, warn
 
 class Level:
 
-    def __init__(self, tiles=None, tilesize=1, width=1,
-                 height=1):
-        self.width = width
-        self.height = height
-        self.tilesize = tilesize # The edge length of a tile, in pixels
+    DEFAULT_PIXELS_PER_METER = 187
+    DEFAULT_TILESIZE = 32
 
-        self._tiles = tiles # The level data
-        if not self._tiles:
-            self._tiles = []
+    def __init__(self, tiles=None, tilesize=DEFAULT_TILESIZE, width=0,
+                 height=0, pixels_per_meter=DEFAULT_PIXELS_PER_METER):
+        if not tiles:
+            tiles = []
+        self._tiles = list(tiles) # The level data
+        self.tilesize = int(tilesize) # The edge length of a tile, in pixels
+        self.width = int(width)
+        self.height = int(height)
+        self.pixels_per_meter = int(pixels_per_meter)
 
     def tiles_to_px(self, tile_units):
         """Return the pixels equivalent of a dimension in tile units"""
@@ -38,15 +41,15 @@ class Level:
         column = int(px_x // self.tilesize)
         return self.get_tile(row, column)
 
-    def tile_at_position(self, position):
-        """Return the tile at the given position.
+    def tile_at_point(self, point):
+        """Return the tile at the given point.
 
-        position is a point.
+        point is a Point2 instance, point.x and point.y are in meters.
 
         """
-        # Convert the coordinates of position to tile row/column, then return
-        # the tile.
-        raise NotImplemented()
+        row = position.y * self.pixels_per_meter // self.tilesize
+        column = position.x * self.pixels_per_meter // self.tilesize
+        return self.get_tile(row, column)
 
     def append_row(self, tile=None):
         """Append a row of the given tile to the level"""

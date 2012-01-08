@@ -10,7 +10,7 @@ class God:
 
     def tick(self, dt=1/60.0):
         for object in self.tracked_objects:
-            tile = self.level.tile_at_position(object.position)
+            tile = self.level.tile_at_point(object.position)
             # Calculate new velocity
             F = tile.force_on_object(object)
             m = obj.mass
