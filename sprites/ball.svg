@@ -10,13 +10,13 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="8"
-   height="8"
+   width="12"
+   height="12"
    id="svg2"
    version="1.1"
    inkscape:version="0.48.1 r9760"
    sodipodi:docname="ball.svg"
-   inkscape:export-filename="/home/lumpy/python/packages/golfram-alpha/sprites/ball-8x8.png"
+   inkscape:export-filename="/home/lumpy/python/packages/golfram-alpha/sprites/ball-12x12.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
   <defs
@@ -29,10 +29,10 @@
          id="stop3757" />
       <stop
          id="stop3765"
-         offset="0.6964286"
-         style="stop-color:#d8dae3;stop-opacity:1;" />
+         offset="0.52857143"
+         style="stop-color:#e1e2e9;stop-opacity:1;" />
       <stop
-         style="stop-color:#7a7a7e;stop-opacity:1;"
+         style="stop-color:#2c2c2d;stop-opacity:1;"
          offset="1"
          id="stop3759" />
     </linearGradient>
@@ -56,8 +56,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1"
-     inkscape:cx="2.9877301"
-     inkscape:cy="3"
+     inkscape:cx="6"
+     inkscape:cy="6"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -84,16 +84,16 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-1044.3622)">
+     transform="translate(0,-1040.3622)">
     <path
        sodipodi:type="arc"
-       style="fill:url(#radialGradient3763);fill-opacity:1;fill-rule:evenodd;stroke:#5a5a5a;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:url(#radialGradient3763);fill-opacity:1;fill-rule:evenodd;stroke:#202020;stroke-width:0.58283204;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="path2985"
        sodipodi:cx="3"
        sodipodi:cy="2.993865"
        sodipodi:rx="3"
        sodipodi:ry="2.993865"
-       d="M 6,2.993865 C 6,4.647331 4.6568542,5.98773 3,5.98773 1.3431458,5.98773 0,4.647331 0,2.993865 0,1.340399 1.3431458,0 3,0 4.6568542,0 6,1.340399 6,2.993865 z"
-       transform="matrix(1.14269,0,0,1.1450316,0.57193009,1044.9342)" />
+       d="m 6,2.993865 a 3,2.993865 0 1 1 -6,0 3,2.993865 0 1 1 6,0 z"
+       transform="matrix(1.8227584,0,0,1.8264935,0.53172494,1040.894)" />
   </g>
 </svg>

@@ -312,6 +312,12 @@ class Level:
 
         return tilesize, tile_defs
 
+    def draw_on_surface(self, surface):
+        for y in range(len(self._tiles)):
+            for x in range(len(self._tiles[y])):
+                d = (x * self.tilesize, y * self.tilesize)
+                surface.blit(self._tiles[y][x].texture, dest=d)
+
 
 class Tile:
 
