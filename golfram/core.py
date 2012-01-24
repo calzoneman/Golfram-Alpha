@@ -184,7 +184,6 @@ class Level:
                          file=filename)
                 else:
                     info("Height: {}".format(height), line=ln, file=filename)
-
             elif words[0] == '@leveldata':
                 info("Reading leveldata", line=ln, file=filename)
                 # Eat all of the leveldata lines
@@ -210,7 +209,6 @@ class Level:
                 pass
             else:
                 warn("Unexpected line; ignoring", line=ln, file=filename)
-
             ln += 1
         # End parsing loop
         # Build the array of tiles
@@ -222,9 +220,11 @@ class Level:
                 try:
                     row.append(tile_defs[char])
                 except KeyError:
-                    warn("somethjing happen")
+                    warn("Invalid character encountered in leveldata!")
+                    # Append some sort of default or placeholder tile here
             tiles.append(row)
-        return Level(tiles, tile_defs, tilesize, width, height)
+        return Level(tiles=tiles, tilesize=tilesize, width=width,
+                     height=height)
 
     @staticmethod
     def load_tiledefs(filename):
@@ -275,7 +275,6 @@ class Level:
                         # field in the tiledefs file
                         texture_args = params['texture'].strip("()").split(',')
                         x, y = int(texture_args[0]), int(texture_args[1])
-
                         params['texture_location'] = (x, y)
                         del params['texture']
                     except KeyError:
@@ -309,7 +308,6 @@ class Level:
                                 info("Tiletype: char={} {}".format(char, params),
                                      line=ln, file=filename)
             ln += 1
-
         return tilesize, tile_defs
 
     def draw_on_surface(self, surface):
