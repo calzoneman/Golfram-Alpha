@@ -2,6 +2,8 @@ from __future__ import print_function
 import os
 import sys
 
+import golfram.config
+
 def warn(message, **kwargs):
     """Print a message explaining a non-critical error
 
@@ -52,7 +54,7 @@ def absolute_path(filename, filetype=None):
     instances of which will know the proper locations of files.
 
     """
-    base = os.getcwd()
+    base = golfram.config.get('data_path')
     if filetype == 'level':
         path = os.path.join(base, 'levels', filename)
     elif filetype == 'tiledef':

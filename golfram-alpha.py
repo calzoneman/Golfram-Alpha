@@ -4,6 +4,7 @@ from random import choice
 
 import pygame
 
+import golfram.config
 from golfram.core import Level
 
 # Some constants that should maybe eventually be relocated.
@@ -11,6 +12,9 @@ from golfram.core import Level
 GOLFRAM_ALPHA = 'Golfram Alpha'
 VERSION = 'golfram-alpha-0.1'
 RESOLUTION = [640,480]
+
+# Load golfram settings
+golfram.config.load('settings.ini')
 
 # Parse command line arguments
 parser = argparse.ArgumentParser(description="Play a nice game of minigolf.")
