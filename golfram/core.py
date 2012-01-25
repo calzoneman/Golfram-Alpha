@@ -26,7 +26,7 @@ Level.tile_at_point():
 from euclid import Point2, Vector2
 import pygame
 
-from golfram.util import absolute_path, info, warn
+from golfram.util import get_path, info, warn
 
 class Level:
 
@@ -153,7 +153,6 @@ class Level:
     @staticmethod
     def load_file(filename):
         """Create a Level object from a level file"""
-        filename = absolute_path(filename, "level")
         width = None
         height = None
         tilesize = None
@@ -203,7 +202,8 @@ class Level:
                     warn("Expected a filename for @tiledefs", line=ln,
                          file=filename)
                 else:
-                    tilesize, tile_defs = Level.load_tiledefs(words[1])
+                    tilesize, tile_defs = Level.load_tiledefs(
+                            get_path(words[1], 'tiledef'))
                     info("Loaded tile definitions", line=ln, file=filename)
             elif words[0] == '@endleveldata':
                 pass
@@ -228,7 +228,6 @@ class Level:
 
     @staticmethod
     def load_tiledefs(filename):
-        filename = absolute_path(filename, "tiledef")
         f = open(filename, 'r')
         lines = [None] + f.readlines()
         f.close()
@@ -250,8 +249,7 @@ class Level:
                          file=filename)
             elif words[0] == '@texture':
                 try:
-                    texture = pygame.image.load(absolute_path(words[1],
-                                                              "level"))
+                    texture = pygame.image.load(get_path(words[1], "texture"))
                 except pygame.error as e:
                     warn("Couldn't load texture {}; ignoring".format(words[1]),
                          line=ln, file=filename)

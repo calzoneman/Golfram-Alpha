@@ -47,7 +47,7 @@ def _print_message(message, message_type, output_file=None, line=None,
                               line=line, message=message)
     print(message, file=output_file)
 
-def absolute_path(filename, filetype=None):
+def get_path(filename, filetype=None):
     """Return the absolute path to the file of the specified type.
 
     Eventually this should move to some sort of GameInstance class,
@@ -58,6 +58,8 @@ def absolute_path(filename, filetype=None):
     if filetype == 'level':
         path = os.path.join(base, 'levels', filename)
     elif filetype == 'tiledef':
+        path = os.path.join(base, 'levels', filename)
+    elif filetype == 'texture':
         path = os.path.join(base, 'levels', filename)
     else:
         path = os.path.join(base, filename)

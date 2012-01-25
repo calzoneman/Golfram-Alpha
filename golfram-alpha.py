@@ -6,6 +6,7 @@ import pygame
 
 import golfram.config
 from golfram.core import Level
+from golfram.util import error, get_path, info
 
 # Some constants that should maybe eventually be relocated.
 # Maybe to a Settings class.
