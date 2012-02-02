@@ -54,7 +54,16 @@ def get_path(filename, filetype=None):
     instances of which will know the proper locations of files.
 
     """
-    base = golfram.config.get('data_path')
+    try:
+        # Try to get the base path from the __main__ module (which should be
+        # golfram_alpha.py)
+        base = os.path.dirname(sys.modules['__main__'].__file__)
+        base = os.path.abspath(base)
+    except AttributeError:
+        # Fallback (if __main__.__file__ isn't defined) to using this file's
+        # path
+        base = os.path.join(os.path.dirname(__file__), '..')
+        base = os.path.abspath(base)
     if filetype == 'level':
         path = os.path.join(base, 'levels', filename)
     elif filetype == 'tiledef':
