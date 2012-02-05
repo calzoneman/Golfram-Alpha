@@ -18,14 +18,14 @@ Level.tile_at_point():
     >>> l = Level([[t1],[t2],[t3]])
     >>> x = l.tilesize * 0.5 / l.pixels_per_meter
     >>> y = l.tilesize * 2.5 / l.pixels_per_meter
-    >>> p = Point(x, y)
+    >>> p = Vector(x, y)
     >>> l.tile_at_point(p) is t3
     True
 
 """
 import pygame
 
-from golfram.geometry import Point, Vector
+from golfram.geometry import Vector
 from golfram.util import get_path, info, warn
 
 class Level:
@@ -56,7 +56,7 @@ class Level:
     def tile_at_point(self, point):
         """Return the tile at the given point.
 
-        point is a Point instance, point.x and point.y are in meters.
+        point is a Vector instance, point.x and point.y are in meters.
 
         """
         row = int(point.y * self.pixels_per_meter // self.tilesize)
@@ -362,7 +362,7 @@ class Ball:
             sprite = pygame.Surface((DEFAULT_SIZE, DEFAULT_SIZE))
         self.sprite = sprite
         if not position:
-            position = Point(0, 0)
+            position = Vector(0, 0)
         self.position = position
         self.mass = float(mass)
         self.diameter = float(diameter)
