@@ -88,6 +88,9 @@ class Level:
         level.get_tile(*coordinates)
 
         """
+        # Don't allow negative indices (which are valid with Python lists)
+        if row < 0 or column < 0:
+            return None
         try:
             return self._tiles[row][column]
         except IndexError:
@@ -327,27 +330,24 @@ class Tile:
     def force_on_object(self, object):
         """Calculate the frictional force applied by self to object.
 
-        object must have the following properties:
-         - mass, a scalar
-         - velocity, a vector
+        object must have the vector property 'velocity'.
 
         """
-        direction = object.velocity.normalized() * -1
-        force = object.mass * self.friction * direction
-        return force
+        direction = -object.velocity.normalize()
+        friction = self.friction * direction
+        return friction
 
 
 class BoostTile(Tile):
 
-    def __init__(self, texture, friction, boost_force):
+    def __init__(self, texture, friction, boost):
         self.texture = texture
         self.friction = friction
-        self.boost_force = boost_force
+        self.boost = boost
 
     def force_on_object(self, object):
-        frictional_force = super(BoostTile, self).force_on_object(object)
-        # Should the boost force depend on the object's mass? For now... no.
-        return frictional_force + self.boost_force
+        friction = Tile.force_on_object(self, object)
+        return friction + self.boost
 
 
 class Ball:

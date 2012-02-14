@@ -39,22 +39,7 @@ class Vector:
 
     def __truediv__(self, value):
         return Vector(self.x / value, self.y / value)
-
-    def __iadd__(self, other):
-        self.x += other.x
-        self.y += other.y
-
-    def __isub__(self, other):
-        self.x -= other.x
-        self.y -= other.y
-
-    def __imul__(self, value):
-        self.x *= value
-        self.y *= value
-
-    def __itruediv__(self, value):
-        self.x /= value
-        self.y /= value
+    __div__ = __truediv__ # Needed for Python 2.x
 
     def __neg__(self):
         return Vector(-self.x, -self.y)
