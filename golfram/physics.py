@@ -21,15 +21,12 @@ class God:
             if tile is None:
                 raise IndexError("Ball out of bounds!")
             # Calculate new velocity
-            # F is not a true 'force'. It is more like a coefficient of force.
-            # Actual force would be F*m. Since accel = actualforce / mass,
-            # a = F*m/m = F .......... yeah...
-            F = tile.force_on_object(object)
-            dv = F * dt
+            a = tile.acceleration_on_object(object)
+            dv = a * dt
             object.velocity += dv
             # Move the object
             v = object.velocity
-            dr = 0.5 * F * dt**2 + v * dt
+            dr = 0.5 * a * dt**2 + v * dt
             object.position += dr
 
 

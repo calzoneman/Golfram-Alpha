@@ -327,8 +327,8 @@ class Tile:
         else:
             self.texture = pygame.Surface((1,1))
 
-    def force_on_object(self, object):
-        """Calculate the frictional force applied by self to object.
+    def acceleration_on_object(self, object):
+        """Calculate the frictional acceleration applied by self to object.
 
         object must have the vector property 'velocity'.
 
@@ -345,8 +345,8 @@ class BoostTile(Tile):
         self.friction = friction
         self.boost = boost
 
-    def force_on_object(self, object):
-        friction = Tile.force_on_object(self, object)
+    def acceleration_on_object(self, object):
+        friction = Tile.acceleration_on_object(self, object)
         return friction + self.boost
 
 
