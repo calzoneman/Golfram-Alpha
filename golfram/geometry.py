@@ -1,5 +1,29 @@
 import math
 
+class Rectangle:
+    """A simple two-dimensional rectangle"""
+
+    __slots__ = ('height', 'nw', 'se', 'width')
+
+    def __init__(self, width=None, height=None, nw=None, se=None):
+        self.nw = nw
+        self.se = se
+        if width is not None and height is not None:
+            self.width = float(width)
+            self.height = float(height)
+
+    def __repr__(self):
+        return 'Rectangle({!r}, {}, {})'.format(self.corner, self.width,
+                                              self.height)
+
+    def __str__(self):
+        return "{}x{} rectangle at {}".format(self.width, self.height,
+                                              self.corner)
+
+    def is_touching(self, rectangle):
+        pass
+
+
 class Vector:
     """A simple two-dimensional vector"""
 
@@ -45,7 +69,13 @@ class Vector:
         return Vector(-self.x, -self.y)
 
     def __pos__(self):
-        return self
+        return Vector(self.x, self.y)
+
+    def __len__(self):
+        return 2
+
+    def __getitem__(self, key):
+        return [self.x, self.y][key]
 
     @property
     def magnitude(self):
