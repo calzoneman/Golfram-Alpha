@@ -24,6 +24,18 @@ class Rectangle:
         pass
 
 
+class Surface:
+    """A wrapper for pygame's Surface to help with offsets and rendering
+
+    Surfaces can be easily split into subsurfaces, which can then be passed
+    to other objects to be drawn on and painlessly re-incorporated to the main
+    Surface. This allows objects to draw themselves with no knowledge of
+    offsets or position.
+
+    """
+    pass
+
+
 class Vector:
     """A simple two-dimensional vector"""
 
