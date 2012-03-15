@@ -150,12 +150,8 @@ class Level:
 
 class Tile:
 
-    def __init__(self, friction=0.1, texture=None):
-        self.friction = float(friction)
-        if texture:
-            self.texture = texture
-        else:
-            self.texture = pygame.Surface((1,1))
+    friction = 0.4
+    texture = None
 
     def acceleration_on_object(self, object):
         """Calculate the frictional acceleration applied by self to object.
@@ -167,18 +163,39 @@ class Tile:
         friction = self.friction * direction
         return friction
 
+    def on_enter(self, object):
+        pass
+
+    def on_exit(self, object):
+        pass
+
 
 class BoostTile(Tile):
 
-    def __init__(self, texture, friction, boost):
-        self.texture = texture
-        self.friction = friction
-        self.boost = boost
+    boost = Vector(-4, 0)
+    friction = 1.0
+    texture_active = Texture('boost_active.png')
+    texture_inactive = Texture('boost_inactive.png')
+
+    @property
+    def texture(self):
+        if self.active > 0:
+            return self.texture_active
+        else:
+            return self.texture_inactive
+
+    def __init__(self, *args):
+        self.active = 0
 
     def acceleration_on_object(self, object):
         friction = Tile.acceleration_on_object(self, object)
         return friction + self.boost
 
+    def on_enter(self, object):
+        self.active += 1
+
+    def on_exit(self, object):
+        self.active -= 1
 
 def load_file(filename):
     """Create a Level object from a level file"""
