@@ -23,6 +23,12 @@ class Boost(BoostTile):
     texture_active = pygame.image.load('sprites/boost_active.png')
     texture_inactive = pygame.image.load('sprites/boost_inactive.png')
 
+# setup pygame window
+pygame.init()
+screen = pygame.display.set_mode((level.width, level.height))
+pygame.display.set_caption("Test stuff")
+
+# Continuously generate test levels and shoot the ball across them
 while True:
     # Create a level of 6x6 random tiles
     N = 8
@@ -33,16 +39,8 @@ while True:
         height = 64 * N
     level = RandomLevel()
 
-    # Load the ball texture
+    # Create a ball
     ball = Ball(sprite=pygame.image.load('sprites/ball-12x12.png'))
-
-    # setup pygame window
-    pygame.init()
-    screen = pygame.display.set_mode((level.width, level.height))
-    pygame.display.set_caption("Test stuff")
-    background = pygame.Surface(screen.get_size()).convert()
-
-    level.draw(background)
 
     # Make physics
     god = God(level)
@@ -53,6 +51,10 @@ while True:
 
     clock = pygame.time.Clock()
     while True:
+        # Draw
+        level.draw(screen)
+        god.draw(screen)
+        pygame.display.flip()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -67,14 +69,8 @@ while True:
         except IndexError:
             print("Ball out of bounds!")
             break
-        #print ball.position
         # Stop if ball stops
         if ball.velocity.magnitude < 0.05:
             print("Ball stopped moving!")
             break
-        # Update screen
-        level.draw(background)
-        screen.blit(background, dest=(0, 0))
-        god.draw(screen)
-        pygame.display.flip()
-
+    del level, ball, god, clock

@@ -138,7 +138,7 @@ class BoostTile(Tile):
         self.active += 1 # A hack, for now
         # This calculation is still wrong... the velocity should ramp toward
         # the target velocity
-        velocity_projection = object.velocity.projection(self.boost_velocity)
+        velocity_projection = object.velocity.project(self.boost_velocity)
         dv = self.boost_velocity - velocity_projection
         object.velocity += dv / 60
         return friction

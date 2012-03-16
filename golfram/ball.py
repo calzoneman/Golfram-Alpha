@@ -1,23 +1,20 @@
 import pygame
 
-from golfram.geometry import Vector
+from golfram.geometry import Circle, Rectangle, Vector
 
-class Ball:
+class GolfBall:
 
-    DEFAULT_MASS = 0.0459 # kg
-    DEFAULT_DIAMETER = 0.0427 # m
-    DEFAULT_SIZE = 8 # px
+    diameter = 0.0427
+    mass = 0.0459
+    shape = Circle(diameter=diameter)
+    sprite = pygame.image.load('sprites/ball-12x12.png')
 
-    def __init__(self, sprite=None, position=None, mass=DEFAULT_MASS,
-                 diameter=DEFAULT_DIAMETER):
-        if not sprite:
-            sprite = pygame.Surface((DEFAULT_SIZE, DEFAULT_SIZE))
-        self.sprite = sprite
+    def __init__(self, position=None, velocity=None):
         if not position:
             position = Vector(0, 0)
+        if not velocity:
+            velocity = Vector(0, 0)
         self.position = position
-        self.mass = float(mass)
-        self.diameter = float(diameter)
         self.velocity = Vector(0, 0)
 
 

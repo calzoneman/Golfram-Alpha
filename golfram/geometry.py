@@ -5,7 +5,13 @@ class Rectangle:
 
     __slots__ = ('height', 'nw', 'se', 'width')
 
-    def __init__(self, width=None, height=None, nw=None, se=None):
+    def __init__(self, width=None, height=None, offset=None)
+        """Create a Rectangle
+
+        offset is a Vector describing the position of the rectangle's top left
+        corner relative to the origin.
+
+        """
         self.nw = nw
         self.se = se
         if width is not None and height is not None:
@@ -97,7 +103,7 @@ class Vector:
         """Return a unit vector in the direction of self"""
         return self / self.magnitude
 
-    def projection(self, other):
+    def project(self, other):
         """Calculates the vector projection onto other"""
         joseph = other.normalize()
         return self * joseph * joseph
