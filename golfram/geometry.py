@@ -96,3 +96,8 @@ class Vector:
     def normalize(self):
         """Return a unit vector in the direction of self"""
         return self / self.magnitude
+
+    def projection(self, other):
+        """Calculates the vector projection onto other"""
+        joseph = other.normalize()
+        return self * joseph * joseph
