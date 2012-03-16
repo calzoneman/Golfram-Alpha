@@ -25,6 +25,7 @@ Level.tile_at_point():
 """
 import pygame
 
+from golfram.ball import Ball
 from golfram.geometry import Vector
 from golfram.util import get_path, info, warn
 
@@ -36,6 +37,7 @@ class Level:
 
     """
     # Actual levels (subclasses) will redefine these:
+    ball = Ball
     pixels_per_meter = 187
     tilesize = 64
     tiles = None
@@ -80,26 +82,8 @@ class Level:
             raise IndexError
         return self.tiles[row][column]
 
-    # Obsolete
-    def draw(self, row_start=0, column_start=0, rows=None, columns=None):
-        if not rows:
-            rows = self.width - row_start
-        if not columns:
-            columns = self.height - column_start
-        surface = pygame.Surface((self.tiles_to_px(rows), self.tiles_to_px(columns)), pygame.SRCALPHA)
-        row = row_start
-        column = column_start
-        while row < row_start + rows and row < self.height:
-            while column < column_start + columns and column < self.width:
-                surface.blit(self.get_tile(row, column).texture,
-                             (self.tiles_to_px(column - column_start), self.tiles_to_px(row - row_start)))
-                column += 1
-            row += 1
-            column = column_start
-        return surface
-
-    # Also obsolete
-    def draw_on_surface(self, surface):
+    # This is currently being used in experimenting.py
+    def draw(self, surface):
         for y in range(len(self.tiles)):
             for x in range(len(self.tiles[y])):
                 d = (x * self.tilesize, y * self.tilesize)
@@ -133,15 +117,16 @@ class Tile:
 
 class BoostTile(Tile):
 
-    boost = Vector(-4, 0)
-    friction = 1.0
-    texture_active = Texture('boost_active.png')
-    texture_inactive = Texture('boost_inactive.png')
+    boost_velocity = None
+    friction = 5.0
+    texture_active = None
+    texture_inactive = None
 
     @property
     def texture(self):
         if self.active > 0:
             return self.texture_active
+            self.active = 0 # A hack, for now
         else:
             return self.texture_inactive
 
@@ -150,7 +135,13 @@ class BoostTile(Tile):
 
     def acceleration_on_object(self, object):
         friction = Tile.acceleration_on_object(self, object)
-        return friction + self.boost
+        self.active += 1 # A hack, for now
+        # This calculation is still wrong... the velocity should ramp toward
+        # the target velocity
+        velocity_projection = object.velocity.projection(self.boost_velocity)
+        dv = self.boost_velocity - velocity_projection
+        object.velocity += dv / 60
+        return friction
 
     def on_enter(self, object):
         self.active += 1

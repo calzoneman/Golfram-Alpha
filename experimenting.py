@@ -3,26 +3,35 @@ import sys
 
 import pygame
 
-from golfram.core import Ball, BoostTile, Level, Tile
+from golfram.ball import Ball
 from golfram.geometry import Vector
+from golfram.level import BoostTile, Level, Tile
 from golfram.physics import God
 
-while True:
-    # Load tile textures and make tiles
-    sboost = pygame.image.load('sprites/boost_tile.png')
-    sred = pygame.image.load('sprites/red.png')
-    sgreen = pygame.image.load('sprites/green.png')
-    sblue = pygame.image.load('sprites/blue.png')
-    boost = BoostTile(texture=sboost, friction=0, boost=Vector(-4,0))
-    red = Tile(texture=sred, friction=0.4)
-    blue = Tile(texture=sblue, friction=0.4)
-    green = Tile(texture=sgreen, friction=0.4)
+# Load tile textures and make tiles
+class Red(Tile):
+    texture = pygame.image.load('sprites/red.png')
 
+class Green(Tile):
+    texture = pygame.image.load('sprites/green.png')
+
+class Blue(Tile):
+    texture = pygame.image.load('sprites/blue.png')
+
+class Boost(BoostTile):
+    boost_velocity = Vector(-2, 0)
+    texture_active = pygame.image.load('sprites/boost_active.png')
+    texture_inactive = pygame.image.load('sprites/boost_inactive.png')
+
+while True:
     # Create a level of 6x6 random tiles
     N = 8
-    choices = [boost, red, red, green, green, blue, blue]
-    tiles = [[choice(choices) for x in range(N)] for y in range(N)]
-    level = Level(tiles=tiles, tilesize=64, width=64*N, height=64*N)
+    choices = [Boost] + [Red] * 2 + [Green] * 2 + [Blue] * 2
+    class RandomLevel(Level):
+        tiles = [[choice(choices)() for x in range(N)] for y in range(N)]
+        width = 64 * N
+        height = 64 * N
+    level = RandomLevel()
 
     # Load the ball texture
     ball = Ball(sprite=pygame.image.load('sprites/ball-12x12.png'))
@@ -33,14 +42,14 @@ while True:
     pygame.display.set_caption("Test stuff")
     background = pygame.Surface(screen.get_size()).convert()
 
-    level.draw_on_surface(background)
+    level.draw(background)
 
     # Make physics
     god = God(level)
     god.watch(ball)
 
     # Give the ball an initial velocity
-    ball.velocity = Vector(2, 1.0)
+    ball.velocity = Vector(2, 1.1)
 
     clock = pygame.time.Clock()
     while True:
@@ -64,6 +73,7 @@ while True:
             print("Ball stopped moving!")
             break
         # Update screen
+        level.draw(background)
         screen.blit(background, dest=(0, 0))
         god.draw(screen)
         pygame.display.flip()
