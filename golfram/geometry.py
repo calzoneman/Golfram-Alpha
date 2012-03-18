@@ -5,7 +5,7 @@ class Rectangle:
 
     __slots__ = ('height', 'nw', 'se', 'width')
 
-    def __init__(self, width=None, height=None, offset=None)
+    def __init__(self, width=None, height=None, offset=None):
         """Create a Rectangle
 
         offset is a Vector describing the position of the rectangle's top left
@@ -97,13 +97,32 @@ class Vector:
 
     @property
     def magnitude(self):
+        """Calculate the magnitude of the vector
+
+        >>> Vector(-12, 0).magnitude
+        12.0
+        >>> Vector(3, 4).magnitude
+        5.0
+
+        """
         return math.sqrt(self.x ** 2 + self.y ** 2)
 
     def normalize(self):
-        """Return a unit vector in the direction of self"""
+        """Return a unit vector in the direction of the vector
+
+        >>> Vector(-12, 0).normalize()
+        Vector(-1.0, 0.0)
+        >>> Vector(2, -7).normalize().magnitude
+        1.0
+        """
         return self / self.magnitude
 
     def project(self, other):
         """Calculates the vector projection onto other"""
         joseph = other.normalize()
         return self * joseph * joseph
+
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()

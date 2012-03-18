@@ -1,11 +1,34 @@
 px = 1/187. # m
 
 class Unit:
+    """Store conversion information for units of measure
 
+    First, define a few Unit instances:
+    >>> px = Unit('px', integral=True)
+    >>> m = Unit('m', px=187)
+    >>> m
+    Unit('m')
+    >>> 5*m
+    5*m
+    >>> 5*m + 3
+    Traceback (most recent call last):
+        ...
+    AttributeError: 'int' object has no attribute 'unit_name'
+    >>> 5*m + 3*px # doctest:+ELLIPSIS
+    5.0160...*m
+    >>> px(5*m + 3*px)
+    937
+    >>> m(64*px) # doctest:+ELLIPSIS
+    0.3422...
+    >>> m(5*m)
+    5
+
+    """
     __slots__ = ('conversions', 'value', 'unit_name')
 
-    def __init__(self, name, **conversions):
+    def __init__(self, name, integral=False, **conversions):
         self.unit_name = name
+        self.integral = integral
         self.conversions = conversions
         self.value = None
 
@@ -18,14 +41,17 @@ class Unit:
     def __call__(self, quantity):
         """Convert the quantity to this unit"""
         if quantity.unit_name == self.unit_name:
-            return quantity.value
+            result = quantity.value
         elif quantity.unit_name in self.conversions:
-            return quantity.value / self.conversions[quantity.unit_name]
+            result = quantity.value / float(self.conversions[quantity.unit_name])
         elif self.unit_name in quantity.conversions:
-            return quantity.value * quantity.conversions[self.unit_name]
+            result = quantity.value * quantity.conversions[self.unit_name]
         else:
             raise ValueError("No conversion info for {0} to {1}".format(
-                    quantity.unit_name, self.unit_name))
+                                 quantity.unit_name, self.unit_name))
+        if self.integral:
+            result = int(result)
+        return result
 
     def __add__(self, other):
         x = self.__copy__()
@@ -62,6 +88,10 @@ class Unit:
         x.value = self.value
         return x
 
-px = Unit('px')
+px = Unit('px', integral=True)
 m = Unit('m', px=187)
 
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
