@@ -1,9 +1,10 @@
-"""The core classes for Golfram Alpha (Level, Tile, Ball, etc.)
+"""
 
 Doctests:
 
 Get a Tile based on its row/column:
 
+    >>> from golfram.tile import Tile
     >>> t = Tile()
     >>> level = Level([[t,t,t]] * 3)
     >>> row, column = 0, 2
@@ -16,8 +17,8 @@ Level.tile_at_point():
     >>> t2 = Tile()
     >>> t3 = Tile()
     >>> l = Level([[t1],[t2],[t3]])
-    >>> x = l.tilesize * 0.5 / l.pixels_per_meter
-    >>> y = l.tilesize * 2.5 / l.pixels_per_meter
+    >>> x = m(l.tilesize * 0.5 * px)
+    >>> y = m(l.tilesize * 2.5 * px)
     >>> p = Vector(x, y)
     >>> l.tile_at_point(p) is t3
     True
@@ -38,7 +39,6 @@ class Level:
     """
     # Actual levels (subclasses) will redefine these:
     ball = Ball
-    pixels_per_meter = 187
     tilesize = 64
     tiles = None
     width = None
@@ -52,6 +52,53 @@ class Level:
         # to figure out all the objects that are drawn in those points/areas
         # which might be impossible).
         self._redraw_queue = []
+        # This is a mapping of 'event_name' to a list of functions that should
+        # be called when said event occurs.
+        self._events = {}
+        # This is a list of tuples of the level's entities and whether they
+        # need to be physicsed.
+        self._entities = []
+
+    def add_entity(self, entity, physics=True):
+        self._entities.append((entity, physics))
+
+    def draw(self, canvas):
+        # Draw all tiles for now. Later, only draw tiles from the _redraw_queue
+        for row in range(len(self.tiles)):
+            for column in range(len(self.tiles[row])):
+                destination = (column * self.tilesize, row * self.tilesize)
+                canvas.blit(self.tiles[row][column].texture, destination)
+        # Draw all entities
+        for entity in self._entities:
+            canvas.add(entity)
+
+    def get_tile(self, row, column):
+        """Return the tile at the given coordinates"""
+        # Don't allow negative indices (which *are* valid for lists)
+        if row < 0 or column < 0:
+            raise IndexError()
+        return self.tiles[row][column]
+
+    def tick(self, dt):
+        for entity, physics in self._entities:
+            if physics:
+                tile = self.tile_at_point(entity.position)
+                # Calculate new velocity
+                a = tile.acceleration_on_object(entity)
+                dv = a * dt
+                entity.velocity += dv
+                # Move the entity
+                v = entity.velocity
+                dr = 0.5 * a * dt**2 + v * dt
+                entity.position += dr
+                # If the entity moved onto a new tile, issue the appropriate
+                # events, and mark the tiles to be redrawn.
+                self._redraw_queue.append(tile)
+                new_tile = self.tile_at_point(entity.position)
+                if new_tile is not tile:
+                    tile.exit_entity(entity)
+                    new_tile.enter_entity(entity)
+                    self._redraw_queue.append(new_tile)
 
     def tiles_to_px(self, tile_units):
         """Return the pixels equivalent of a dimension in tile units"""
@@ -63,91 +110,9 @@ class Level:
         point is a Vector instance, point.x and point.y are in meters.
 
         """
-        row = int(point.y * self.pixels_per_meter // self.tilesize)
-        column = int(point.x * self.pixels_per_meter // self.tilesize)
+        row = int(px(point.y) // self.tilesize)
+        column = int(px(point.x) // self.tilesize)
         return self.get_tile(row, column)
-
-    def get_tile(self, row, column):
-        """Return the tile at the given coordinates
-
-        Returns None if an IndexError occurs
-
-        Hint: You can use tuple unpacking when you call the function.
-        coordinates = (x, y)
-        level.get_tile(*coordinates)
-
-        """
-        # Don't allow negative indices (which *are* valid for lists)
-        if row < 0 or column < 0:
-            raise IndexError
-        return self.tiles[row][column]
-
-    # This is currently being used in experimenting.py
-    def draw(self, surface):
-        for y in range(len(self.tiles)):
-            for x in range(len(self.tiles[y])):
-                d = (x * self.tilesize, y * self.tilesize)
-                surface.blit(self.tiles[y][x].texture, dest=d)
-
-
-class Tile:
-
-    friction = 0.4
-    texture = None
-
-    def acceleration_on_object(self, object):
-        """Calculate the frictional acceleration applied by self to object.
-
-        object must have the vector property 'velocity'.
-
-        """
-        direction = -object.velocity.normalize()
-        friction = self.friction * direction
-        return friction
-
-    def draw(self):
-        return self.texture
-
-    def on_enter(self, object):
-        pass
-
-    def on_exit(self, object):
-        pass
-
-
-class BoostTile(Tile):
-
-    boost_velocity = None
-    friction = 5.0
-    texture_active = None
-    texture_inactive = None
-
-    @property
-    def texture(self):
-        if self.active > 0:
-            return self.texture_active
-            self.active = 0 # A hack, for now
-        else:
-            return self.texture_inactive
-
-    def __init__(self, *args):
-        self.active = 0
-
-    def acceleration_on_object(self, object):
-        friction = Tile.acceleration_on_object(self, object)
-        self.active += 1 # A hack, for now
-        # This calculation is still wrong... the velocity should ramp toward
-        # the target velocity
-        velocity_projection = object.velocity.project(self.boost_velocity)
-        dv = self.boost_velocity - velocity_projection
-        object.velocity += dv / 60
-        return friction
-
-    def on_enter(self, object):
-        self.active += 1
-
-    def on_exit(self, object):
-        self.active -= 1
 
 
 if __name__ == '__main__':

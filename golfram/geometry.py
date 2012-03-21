@@ -5,41 +5,43 @@ class Rectangle:
 
     __slots__ = ('height', 'nw', 'se', 'width')
 
-    def __init__(self, width=None, height=None, offset=None):
+    def __init__(self, nw=None, se=None, width=None, height=None):
         """Create a Rectangle
 
         offset is a Vector describing the position of the rectangle's top left
         corner relative to the origin.
 
         """
-        self.nw = nw
-        self.se = se
-        if width is not None and height is not None:
-            self.width = float(width)
-            self.height = float(height)
+        if width and height:
+            if se and not nw:
+                self.se = se
+                self.nw = Vector(self.se.x - width, self.se.y - height)
+            else:
+                if nw:
+                    self.nw = nw
+                else:
+                    self.nw = Vector(0, 0)
+                self.se = Vector(self.nw.x + width, self.nw.y + height)
+        elif nw and se:
+            self.nw = nw
+            self.se = se
+            self.width = self.se.x - self.nw.x
+            self.height = self.se.y - self.nw.y
+        else:
+            raise ValueError("Invalid argument combination")
 
     def __repr__(self):
-        return 'Rectangle({!r}, {}, {})'.format(self.corner, self.width,
-                                              self.height)
+        return 'Rectangle({0!r}, {1!r})'.format(self.nw, self.se)
 
     def __str__(self):
-        return "{}x{} rectangle at {}".format(self.width, self.height,
-                                              self.corner)
+        return self.__repr__()
+
+    def contains(self, point):
+        return (point.x >= self.nw.x and point.x <= self.sw.x and
+                point.y >= self.nw.y and point.y <= self.sw.y)
 
     def is_touching(self, rectangle):
-        pass
-
-
-class Surface:
-    """A wrapper for pygame's Surface to help with offsets and rendering
-
-    Surfaces can be easily split into subsurfaces, which can then be passed
-    to other objects to be drawn on and painlessly re-incorporated to the main
-    Surface. This allows objects to draw themselves with no knowledge of
-    offsets or position.
-
-    """
-    pass
+        raise NotImplemented()
 
 
 class Vector:
