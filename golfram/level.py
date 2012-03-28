@@ -44,7 +44,7 @@ class Level:
     width = None
     height = None
 
-    def __init__(self):
+    def __init__(self, screen):
         # The idea here is to keep track of what things we need to redraw,
         # instead of redrawing everything every frame. I'm not sure what
         # to store here, though; the objects themselves is a possibility, or
@@ -58,16 +58,19 @@ class Level:
         # This is a list of tuples of the level's entities and whether they
         # need to be physicsed.
         self._entities = []
+        # This is a rectangle that specifies what part of the level is
+        # currently visible.
+        self._view = Rectangle(screen.get_width(), screen.get_height())
 
     def add_entity(self, entity, physics=True):
         self._entities.append((entity, physics))
 
-    def draw(self, canvas):
+    def draw(self, surface):
         # Draw all tiles for now. Later, only draw tiles from the _redraw_queue
-        for row in range(len(self.tiles)):
-            for column in range(len(self.tiles[row])):
+        for row, tiles in enumerate(self.tiles)):
+            for column, tile in enumerate(tiles):
                 destination = (column * self.tilesize, row * self.tilesize)
-                canvas.blit(self.tiles[row][column].texture, destination)
+                surface.blit(self.tiles[row][column].texture, destination)
         # Draw all entities
         for entity in self._entities:
             canvas.add(entity)
