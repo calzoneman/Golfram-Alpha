@@ -34,7 +34,6 @@ class BoostTile(Tile):
     def texture(self):
         if self.active > 0:
             return self.texture_active
-            self.active = 0 # A hack, for now
         else:
             return self.texture_inactive
 
@@ -43,7 +42,6 @@ class BoostTile(Tile):
 
     def acceleration_on_object(self, object):
         friction = Tile.acceleration_on_object(self, object)
-        self.active += 1 # A hack, for now
         # This calculation is still wrong... the velocity should ramp toward
         # the target velocity
         velocity_projection = object.velocity.project(self.boost_velocity)
