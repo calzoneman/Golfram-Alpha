@@ -1,5 +1,3 @@
-px = 1/187. # m
-
 class Unit:
     """Store conversion information for units of measure
 

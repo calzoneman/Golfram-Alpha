@@ -26,11 +26,12 @@ Level.tile_at_point():
 """
 import pygame
 
-from golfram.ball import Ball
-from golfram.geometry import Vector
+from golfram.ball import GolfBall
+from golfram.geometry import Rectangle, Vector
+from golfram.units import m, px
 from golfram.util import get_path, info, warn
 
-class Level:
+class Level(object):
     """Base level class
 
     Every Golfram level is defined by a subclass of Level. The simplest level
@@ -38,7 +39,7 @@ class Level:
 
     """
     # Actual levels (subclasses) will redefine these:
-    ball = Ball
+    ball_class = GolfBall
     tilesize = 64
     tiles = None
     width = None
@@ -60,20 +61,25 @@ class Level:
         self._entities = []
         # This is a rectangle that specifies what part of the level is
         # currently visible.
-        self._view = Rectangle(screen.get_width(), screen.get_height())
+        self._view = Rectangle(width=m(screen.get_width()*px),
+                               height=m(screen.get_height()*px))
+        # Set up the level
+        self.set_up()
 
     def add_entity(self, entity, physics=True):
         self._entities.append((entity, physics))
 
     def draw(self, surface):
         # Draw all tiles for now. Later, only draw tiles from the _redraw_queue
-        for row, tiles in enumerate(self.tiles)):
+        # Or, only draw tiles that are inside the _view rectangle
+        for row, tiles in enumerate(self.tiles):
             for column, tile in enumerate(tiles):
                 destination = (column * self.tilesize, row * self.tilesize)
                 surface.blit(self.tiles[row][column].texture, destination)
         # Draw all entities
-        for entity in self._entities:
-            canvas.add(entity)
+        for entity, physics in self._entities:
+            surface.blit(entity.texture, (px(entity.position.x*m),
+                                          px(entity.position.y*m)))
 
     def get_tile(self, row, column):
         """Return the tile at the given coordinates"""
@@ -82,7 +88,15 @@ class Level:
             raise IndexError()
         return self.tiles[row][column]
 
+    def is_complete(self):
+        raise NotImplemented
+
+    def set_up(self):
+        raise NotImplemented
+
     def tick(self, dt):
+        if self.is_complete():
+            raise LevelComplete
         for entity, physics in self._entities:
             if physics:
                 tile = self.tile_at_point(entity.position)
@@ -99,8 +113,8 @@ class Level:
                 self._redraw_queue.append(tile)
                 new_tile = self.tile_at_point(entity.position)
                 if new_tile is not tile:
-                    tile.exit_entity(entity)
-                    new_tile.enter_entity(entity)
+                    tile.on_exit(entity)
+                    new_tile.on_enter(entity)
                     self._redraw_queue.append(new_tile)
 
     def tiles_to_px(self, tile_units):
@@ -113,9 +127,13 @@ class Level:
         point is a Vector instance, point.x and point.y are in meters.
 
         """
-        row = int(px(point.y) // self.tilesize)
-        column = int(px(point.x) // self.tilesize)
+        row = int(px(point.y*m) // self.tilesize)
+        column = int(px(point.x*m) // self.tilesize)
         return self.get_tile(row, column)
+
+
+class LevelComplete(Exception):
+    pass
 
 
 if __name__ == '__main__':

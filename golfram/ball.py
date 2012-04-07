@@ -6,8 +6,8 @@ class GolfBall:
 
     diameter = 0.0427
     mass = 0.0459
-    shape = Circle(diameter=diameter)
-    sprite = pygame.image.load('sprites/ball-12x12.png')
+    shape = Circle(radius=diameter/2)
+    texture = pygame.image.load('sprites/ball-12x12.png')
 
     def __init__(self, position=None, velocity=None):
         if not position:

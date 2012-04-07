@@ -1,4 +1,4 @@
-class Tile:
+class Tile(object):
 
     friction = 0.4
     texture = None
@@ -51,10 +51,10 @@ class BoostTile(Tile):
         object.velocity += dv / 60
         return friction
 
-    def on_enter(self, object):
+    def on_enter(self, entity):
         self.active += 1
 
-    def on_exit(self, object):
+    def on_exit(self, entity):
         self.active -= 1
 
 

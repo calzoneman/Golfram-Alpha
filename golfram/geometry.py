@@ -1,5 +1,17 @@
 import math
 
+class Circle:
+
+    __slots__ = ('center', 'radius')
+
+    def __init__(self, radius, center=None):
+        if center:
+            self.center = center
+        else:
+            self.center = Vector(0, 0)
+        self.radius = radius
+
+
 class Rectangle:
     """A simple two-dimensional rectangle"""
 

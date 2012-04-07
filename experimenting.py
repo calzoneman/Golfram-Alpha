@@ -3,10 +3,10 @@ import sys
 
 import pygame
 
-from golfram.ball import Ball
+from golfram.ball import GolfBall
 from golfram.geometry import Vector
-from golfram.level import BoostTile, Level, Tile
-from golfram.physics import God
+from golfram.level import Level, LevelComplete
+from golfram.tile import BoostTile, Tile
 
 # Load tile textures and make tiles
 class Red(Tile):
@@ -23,37 +23,38 @@ class Boost(BoostTile):
     texture_active = pygame.image.load('sprites/boost_active.png')
     texture_inactive = pygame.image.load('sprites/boost_inactive.png')
 
+class RandomLevel(Level):
+
+    def set_up(self):
+        # Create a level of 6x6 random tiles
+        N = 8
+        choices = [Boost] + [Red] * 2 + [Green] * 2 + [Blue] * 2
+        self.tiles = [[choice(choices)() for x in range(N)] for y in range(N)]
+        # This is still wrong. We shouldn't have to define width and height at
+        # all. Or at least not in pixels.
+        self.width = 64 * N
+        self.height = 64 * N
+        # Spawn a new ball
+        self.ball = self.ball_class()
+        self.add_entity(self.ball)
+        # Start it with some initial velocity, for experimenting!
+        self.ball.velocity = Vector(2, 1.1)
+
+    def is_complete(self):
+        return self.ball.velocity.magnitude < 0.03
+
 # setup pygame window
 pygame.init()
-screen = pygame.display.set_mode((level.width, level.height))
-pygame.display.set_caption("Test stuff")
+screen = pygame.display.set_mode((64 * 8, 64 * 8))
+pygame.display.set_caption("Test stuFf")
 
 # Continuously generate test levels and shoot the ball across them
 while True:
-    # Create a level of 6x6 random tiles
-    N = 8
-    choices = [Boost] + [Red] * 2 + [Green] * 2 + [Blue] * 2
-    class RandomLevel(Level):
-        tiles = [[choice(choices)() for x in range(N)] for y in range(N)]
-        width = 64 * N
-        height = 64 * N
-    level = RandomLevel()
-
-    # Create a ball
-    ball = Ball(sprite=pygame.image.load('sprites/ball-12x12.png'))
-
-    # Make physics
-    god = God(level)
-    god.watch(ball)
-
-    # Give the ball an initial velocity
-    ball.velocity = Vector(2, 1.1)
-
+    level = RandomLevel(screen)
     clock = pygame.time.Clock()
     while True:
         # Draw
         level.draw(screen)
-        god.draw(screen)
         pygame.display.flip()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -65,12 +66,7 @@ while True:
         n = 10
         try:
             for i in range(n):
-                god.tick(dt=dt/n)
-        except IndexError:
-            print("Ball out of bounds!")
+                level.tick(dt=dt/n)
+        except (IndexError, LevelComplete):
             break
-        # Stop if ball stops
-        if ball.velocity.magnitude < 0.05:
-            print("Ball stopped moving!")
-            break
-    del level, ball, god, clock
+    del level, clock
