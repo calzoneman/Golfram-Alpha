@@ -3,47 +3,59 @@ import sys
 
 import pygame
 
-from golfram.core import Ball, BoostTile, Level, Tile
+from golfram.ball import GolfBall
 from golfram.geometry import Vector
-from golfram.physics import God
+from golfram.level import Level, LevelComplete
+from golfram.tile import BoostTile, Tile
 
+# Load tile textures and make tiles
+class Red(Tile):
+    texture = pygame.image.load('sprites/red.png')
+
+class Green(Tile):
+    texture = pygame.image.load('sprites/green.png')
+
+class Blue(Tile):
+    texture = pygame.image.load('sprites/blue.png')
+
+class Boost(BoostTile):
+    boost_velocity = Vector(-2, 0)
+    texture_active = pygame.image.load('sprites/boost_active.png')
+    texture_inactive = pygame.image.load('sprites/boost_inactive.png')
+
+class RandomLevel(Level):
+
+    def set_up(self):
+        # Create a level of 6x6 random tiles
+        N = 8
+        choices = [Boost] + [Red] * 2 + [Green] * 2 + [Blue] * 2
+        self.tiles = [[choice(choices)() for x in range(N)] for y in range(N)]
+        # This is still wrong. We shouldn't have to define width and height at
+        # all. Or at least not in pixels.
+        self.width = 64 * N
+        self.height = 64 * N
+        # Spawn a new ball
+        self.ball = self.ball_class()
+        self.add_entity(self.ball)
+        # Start it with some initial velocity, for experimenting!
+        self.ball.velocity = Vector(2, 1.1)
+
+    def is_complete(self):
+        return self.ball.velocity.magnitude < 0.03
+
+# setup pygame window
+pygame.init()
+screen = pygame.display.set_mode((64 * 8, 64 * 8))
+pygame.display.set_caption("Test stuFf")
+
+# Continuously generate test levels and shoot the ball across them
 while True:
-    # Load tile textures and make tiles
-    sboost = pygame.image.load('sprites/boost_tile.png')
-    sred = pygame.image.load('sprites/red.png')
-    sgreen = pygame.image.load('sprites/green.png')
-    sblue = pygame.image.load('sprites/blue.png')
-    boost = BoostTile(texture=sboost, friction=0, boost=Vector(-4,0))
-    red = Tile(texture=sred, friction=0.4)
-    blue = Tile(texture=sblue, friction=0.4)
-    green = Tile(texture=sgreen, friction=0.4)
-
-    # Create a level of 6x6 random tiles
-    N = 8
-    choices = [boost, red, red, green, green, blue, blue]
-    tiles = [[choice(choices) for x in range(N)] for y in range(N)]
-    level = Level(tiles=tiles, tilesize=64, width=64*N, height=64*N)
-
-    # Load the ball texture
-    ball = Ball(sprite=pygame.image.load('sprites/ball-12x12.png'))
-
-    # setup pygame window
-    pygame.init()
-    screen = pygame.display.set_mode((level.width, level.height))
-    pygame.display.set_caption("Test stuff")
-    background = pygame.Surface(screen.get_size()).convert()
-
-    level.draw_on_surface(background)
-
-    # Make physics
-    god = God(level)
-    god.watch(ball)
-
-    # Give the ball an initial velocity
-    ball.velocity = Vector(2, 1.0)
-
+    level = RandomLevel(screen)
     clock = pygame.time.Clock()
     while True:
+        # Draw
+        level.draw(screen)
+        pygame.display.flip()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -54,17 +66,7 @@ while True:
         n = 10
         try:
             for i in range(n):
-                god.tick(dt=dt/n)
-        except IndexError:
-            print("Ball out of bounds!")
+                level.tick(dt=dt/n)
+        except (IndexError, LevelComplete):
             break
-        #print ball.position
-        # Stop if ball stops
-        if ball.velocity.magnitude < 0.05:
-            print("Ball stopped moving!")
-            break
-        # Update screen
-        screen.blit(background, dest=(0, 0))
-        god.draw(screen)
-        pygame.display.flip()
-
+    del level, clock
